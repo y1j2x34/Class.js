@@ -1,0 +1,19 @@
+{
+  "name": "class.js",
+  "version": "1.0.0",
+  "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/y1j2x34/Class.js.git"
+  },
+  "author": "'y1j2x34' <y1j2x34@qq.com> (http://www.vgerbot.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/y1j2x34/Class.js/issues"
+  },
+  "homepage": "https://github.com/y1j2x34/Class.js#readme"
+}
