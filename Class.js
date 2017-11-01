@@ -1,14 +1,14 @@
 (function(global, factory) {
-    "use strict";
-    if(module && module.exports){
+    'use strict';
+    if (module && module.exports) {
         module.exports = factory();
-    } else if(define && define.amd){
+    } else if (define && define.amd) {
         define(factory);
-    }  else {
+    } else {
         global.Class = factory();
     }
 })(this, function() {
-    "use strict";
+    'use strict';
 
     Class.create = createClass;
     Class.extend = extend;
@@ -19,16 +19,31 @@
     var constructorFactoryCache = {};
 
     return Class;
-    
+
     function Class() {}
-    
-    function isAssignableFrom(SuperClass){
+
+    function isAssignableFrom(SuperClass) {
         // jshint validthis: true
         return _isAssignable(this, SuperClass);
     }
 
-    function singleton() {
-        var Cls = callFunction(createClass, null, arguments);
+    function singleton(nameOrSuperclass, definition) {
+        var Cls;
+        switch (arguments.length) {
+            case 0:
+                throw new Error('Illegal arguments');
+            case 1:
+                Cls = createClass(nameOrSuperclass);
+                break;
+            default:
+                if (isString(nameOrSuperclass)) {
+                    Cls = createClass(nameOrSuperclass, definition);
+                } else if (isFunction(nameOrSuperclass)) {
+                    Cls = extend(nameOrSuperclass, definition);
+                } else {
+                    throw new Error('Illegal arguments');
+                }
+        }
         return new Cls();
     }
 
@@ -42,17 +57,16 @@
                     definition = {};
                 } else {
                     definition = name;
-                    name = definition.name || '<anonymous>';
                 }
                 break;
-            case 2:
+            default:
                 if (isDefined(definition)) {
                     definition.name = name;
                 }
         }
         if (definition) {
             var clsName = definition.name;
-            if (!/^\w+$/.test(clsName)) {
+            if (!/^[a-z\$_][\w\$]*$/i.test(clsName)) {
                 throw new Error('Invalid class name: ' + clsName);
             }
         }
@@ -73,18 +87,18 @@
         var isPythonicOn = definition.pythonic !== false;
         var className = definition.name || 'Class';
 
-        var propertyNames = Object.getOwnPropertyNames(definition);
-        propertyNames = removeFirst(propertyNames, 'init');
-        propertyNames = removeFirst(propertyNames, 'statics');
-        propertyNames = removeFirst(propertyNames, 'pythonic');
-        propertyNames = removeFirst(propertyNames, 'name');
-
         if (typeof init !== 'function') {
             init = noop;
         }
         if (isPythonicOn) {
             init = _pythonic(init);
         }
+
+        var propertyNames = Object.getOwnPropertyNames(definition);
+        propertyNames = removeFirst(propertyNames, 'init');
+        propertyNames = removeFirst(propertyNames, 'statics');
+        propertyNames = removeFirst(propertyNames, 'pythonic');
+        propertyNames = removeFirst(propertyNames, 'name');
 
         function F() {}
         F.prototype = Super.prototype;
@@ -96,14 +110,13 @@
         defineConstant(clazz.prototype, 'clazz', clazz);
         defineConstant(clazz.prototype, 'uber', Super.prototype);
         defineConstant(clazz.prototype, '$callSuper', $callSuper);
-        defineConstant(clazz.prototype, 'superclass', Super);
         defineConstant(clazz, 'superclass', Super);
         defineConstant(clazz, 'isAssignableFrom', isAssignableFrom);
-        defineConstant(clazz, '$classdef', definition);
+        defineConstant(clazz, '$classdef', _extendClassdef(definition, Super));
         defineConstant(clazz, 'extend', function(definition) {
             return extend.call(clazz, clazz, definition);
         });
-        defineConstant(clazz.prototype, '$super', $super);
+        clazz.prototype.$super = $super;
 
         _extendStatics(clazz, statics, Super);
 
@@ -123,28 +136,36 @@
         }
         return clazz;
 
-        function $callSuper(name){
+        function $callSuper(name) {
             var fn = Super.prototype[name];
             if (!(fn instanceof Function)) {
                 throw new Error();
             }
             var args = arguments[1];
-            if (args + '' !== '[object Arguments]') {
-                args = Array.prototype.slice.call(arguments, 1);
+            if (!isArgument(args)) {
+                args = slice(arguments, 1);
             }
-            
-            return callFunction(fn, this, args);
+
+            return fn.apply(this, args);
         }
         function $super(first) {
             var self = this;
             var args = arguments;
             if (isPythonicOn && isArgument(first)) {
-                args = Array.prototype.slice.call(first, 1);
+                args = slice(first, 1);
             }
             if (_isAssignable(clazz, Array)) {
-                callFunction(self.push, self, args);
+                self.push.apply(self, args);
             } else {
-                callFunction(self.superclass, self, args);
+                var uber = Super.prototype;
+                if (uber && uber.$super) {
+                    var _super = uber.$super;
+                    self.$super = function() {
+                        return _super.apply(this, arguments);
+                    };
+                    uber.clazz.apply(self, args);
+                    self.$super = _super;
+                }
             }
         }
     }
@@ -153,34 +174,44 @@
         if (!constructorFactoryCache[className]) {
             // jshint evil: true
             constructorFactoryCache[className] = new Function(
-                'init',"callFunction",
-                'return function ' + className + '(){return callFunction(init, this, arguments);}'
+                'init',
+                'return function ' + className + '(){return init.apply(this, arguments);}'
             );
         }
-        return constructorFactoryCache[className](init, callFunction);
+        return constructorFactoryCache[className](init);
     }
-    
-    function mix(superclass){
+
+    function mix(superclass) {
         return new MixinBuilder(superclass);
     }
-    function MixinBuilder(superclass){
-        this.with = function(){
-            return Array.prototype.reduce.call(arguments, function(c, m){
-                return mixin(c, m);
-            }, superclass);
+    function MixinBuilder(superclass) {
+        this.with = function() {
+            return Array.prototype.reduceRight.call(
+                arguments,
+                function(c, m) {
+                    return _mixin(c, m);
+                },
+                superclass
+            );
         };
-        function mixin(c, m) {
-            var def = {
-                name: c.name,
-                init: function(self) {
-                    self.$super(arguments);
+    }
+    function _mixin(c, m) {
+        var wrapClassM = _wrap(m);
+        return Class.extend(c, Object.assign({}, wrapClassM.$classdef, {
+            name: m.name+'$'+c.name
+        }));
+
+        function _wrap(superclass) {
+            return Class.extend(superclass, {
+                name: superclass.name + '$mixin',
+                pythonic: superclass.$classdef.pythonic,
+                init: function(){
+                    superclass.apply(this, arguments); // jshint ignore: line
                 }
-            };
-            var clazz = Class.extend(c, def);
-            return Class.extend(clazz, m.$classdef);
+            });
         }
     }
-    function _isAssignable(from, SuperClass){
+    function _isAssignable(from, SuperClass) {
         if (!SuperClass || !from) {
             return false;
         }
@@ -189,17 +220,20 @@
         }
         return Object.create(from.prototype) instanceof SuperClass;
     }
-    function _extendStatics(SubClass, statics, SuperClass){
-        if(!statics){
+    function _extendClassdef(target, Superclass) {
+        return Object.assign({}, Superclass.$classdef, target);
+    }
+    function _extendStatics(SubClass, statics, SuperClass) {
+        if (!statics) {
             statics = {};
         }
         _setPrototypeOf(statics, SuperClass);
         _setPrototypeOf(SubClass, statics);
     }
-    function _setPrototypeOf(dest, supr){
-        if(Object.setPrototypeOf){
+    function _setPrototypeOf(dest, supr) {
+        if (Object.setPrototypeOf) {
             Object.setPrototypeOf(dest, supr);
-        } else if(({'__proto__':[]}) instanceof Array){
+        } else if ({ __proto__: [] } instanceof Array) {
             dest.__proto__ = supr;
         } else {
             copyDescriptors(supr, dest, Object.getOwnPropertyNames(supr));
@@ -248,43 +282,10 @@
     function _pythonic(fn) {
         var decorator = function() {
             var self = this;
-            var args = [self];
-            callFunction(args.push, args, arguments);
-            return callFunction(fn, self, args);
+            var args = [self].concat(toArray(arguments));
+            return fn.apply(self, args);
         };
         return decorator;
-    }
-
-    function callFunction(fn, ns, args) {
-        if (!args) {
-            return fn.call(ns);
-        }
-        switch (args.length) {
-            case 0:
-                return fn.call(ns);
-            case 1:
-                return fn.call(ns, args[0]);
-            case 2:
-                return fn.call(ns, args[0], args[1]);
-            case 3:
-                return fn.call(ns, args[0], args[1], args[2]);
-            case 4:
-                return fn.call(ns, args[0], args[1], args[2], args[3]);
-            case 5:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4]);
-            case 6:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4], args[5]);
-            case 7:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-            case 8:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-            case 9:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-            case 10:
-                return fn.call(ns, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
-            default:
-                return fn.apply(ns, args);
-        }
     }
 
     function removeFirst(array, value) {
@@ -303,6 +304,13 @@
         }
     }
 
+    function slice(arr, index) {
+        return Array.prototype.slice.call(arr, index);
+    }
+
+    function toArray(args) {
+        return slice(args, 0);
+    }
     function isString(value) {
         return typeof value === 'string';
     }
@@ -316,7 +324,7 @@
     }
 
     function isArgument(value) {
-        return value + '' === '[object Arguments]';
+        return value && '[object Arguments]' === value.toString();
     }
 
     function acceptAll() {
