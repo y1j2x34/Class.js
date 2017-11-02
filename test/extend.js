@@ -1,3 +1,1 @@
-module.exports = Class => {
-    
-};
+const Class = require('../Class.js');

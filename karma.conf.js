@@ -10,16 +10,16 @@ module.exports = function(config){
         files: [{
             pattern: 'test/*.js',
             watched: true,
-            included: false,
-            served: false
-        }, {
-            pattern: 'test.js',
-            watched: true,
             included: true,
+            served: true
+        }, {
+            pattern:'Class.js',
+            watched: true,
+            included: false,
             served: true
         }],
         preprocessors: {
-            'test.js': ['browserify']
+            'test/*.js': ['browserify']
         },
         browserify: {
             debug: true,
