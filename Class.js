@@ -1,5 +1,5 @@
 (function(global, factory) {
-    'use strict';
+    // jshint strict: false
     if (module && module.exports) {
         module.exports = factory();
     } else if (define && define.amd) {
