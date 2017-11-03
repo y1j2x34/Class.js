@@ -142,11 +142,11 @@ var Puppy = Class.extend(Flyable, {
 });
 
 
-var sth = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
-    name: 'Batman',
+var flyingPuppy = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
+    name:  'FlyingPuppy',
     init: function(self) {
         self.$super(arguments);
-        console.info('create sth');
+        console.info('create FlyingPuppy');
     },
     fly: function() {
         console.info('I can fly to anywhere on the earth');
@@ -157,7 +157,7 @@ var sth = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
 // create mammal
 // create puppy
 // create bird
-// create sth
+// create FlyingPuppy
 
 
 sth.fly(); //I can fly to anywhere on the earth
