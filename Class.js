@@ -186,7 +186,7 @@
     }
     function MixinBuilder(superclass) {
         this.with = function() {
-            return Array.prototype.reduceRight.call(
+            return Array.prototype.reduce.call(
                 arguments,
                 function(c, m) {
                     return _mixin(c, m);
@@ -196,19 +196,22 @@
         };
     }
     function _mixin(c, m) {
-        var wrapClassM = _wrap(m);
-        return Class.extend(c, Object.assign({}, wrapClassM.$classdef, {
-            name: m.name+'$'+c.name
-        }));
+        var wrapClassM = _wrap(m, m.name + '$' + c.name);
+        return Class.extend(c, wrapClassM.$classdef);
 
-        function _wrap(superclass) {
+        function _wrap(superclass, name) {
+            var pythonic = superclass.$classdef.pythonic !== false;
             return Class.extend(superclass, {
-                name: superclass.name + '$mixin',
-                pythonic: superclass.$classdef.pythonic,
-                init: function(){
-                    superclass.apply(this, arguments); // jshint ignore: line
-                }
+                name: name,
+                pythonic: pythonic,
+                init: pythonic? pythonicInit: normalInit
             });
+            function pythonicInit(){
+                superclass.apply(this, slice(arguments, 1)); // jshint ignore: line
+            }
+            function normalInit(){
+                superclass.apply(this, arguments); // jshint ignore: line
+            }
         }
     }
     function _isAssignable(from, SuperClass) {
@@ -284,6 +287,12 @@
             var self = this;
             var args = [self].concat(toArray(arguments));
             return fn.apply(self, args);
+        };
+        decorator.toString = function(){
+            return fn.toString();
+        };
+        decorator.valueOf = function(){
+            return fn;
         };
         return decorator;
     }

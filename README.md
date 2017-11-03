@@ -160,11 +160,11 @@ var flyingPuppy = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
 // create FlyingPuppy
 
 
-sth.fly(); //I can fly to anywhere on the earth
-sth.bite(); // mammal bite
-sth.landing(); // flyable landing
-sth.eat(); // bird like to eat worms
-sth.smile();// smilling puppy
+flyingPuppy.fly(); //I can fly to anywhere on the earth
+flyingPuppy.bite(); // animal bite
+flyingPuppy.landing(); // flyable landing
+flyingPuppy.eat(); // puppy eat
+flyingPuppy.smile();// smilling puppy
 
 
 ```
