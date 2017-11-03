@@ -1,7 +1,6 @@
 const Class = require('../Class.js');
 
 describe('create class', () => {
-    const CLASS_NAME = 'Animal';
     it('create class', () => {
         var Cls = Class.create({});
         expect(Cls).toBeDefined();
@@ -12,13 +11,34 @@ describe('create class', () => {
         expect(instance).toBeDefined();
         expect(typeof instance).toBe('object');
     });
-    it('test class name', () => {
+    it('test class name declaring', () => {
+        const CLASS_NAME = 'Animal';
         const ClassA = Class.create(CLASS_NAME, {});
         const ClassB = Class.create({
             name: CLASS_NAME
         });
         expect(ClassA.name).toBe(CLASS_NAME);
         expect(ClassB.name).toBe(CLASS_NAME);
+    });
+    it('test class name format', () => {
+        expect(function(){
+            Class.create('123', {});
+        }).toThrow();
+        expect(function(){
+            Class.create('azAZ$_.', {});
+        }).toThrow();
+        expect(function(){
+            Class.create('azAZ$_/', {});
+        }).toThrow();
+
+        expect(function(){
+            Class.create('$123');
+            Class.create('_123');
+            Class.create('a123');
+            Class.create('z123');
+            Class.create('A123');
+            Class.create('Z123');
+        }).not.toThrow();
     });
     it('test static properties', () => {
         var STATIC_VALUE = {};
