@@ -1,4 +1,6 @@
 {
     "esversion": 6,
-    "jasmine": true
+    "jasmine": true,
+    "unused": true,
+    "undef": true
 }
