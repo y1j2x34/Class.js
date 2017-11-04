@@ -17,7 +17,7 @@
     Class.isAssignableFrom = isAssignableFrom;
 
     var constructorFactoryCache = {};
-
+    var classCount = 0;  
     return Class;
 
     function Class() {}
@@ -85,7 +85,7 @@
         var init = definition.init;
         var statics = definition.statics;
         var isPythonicOn = definition.pythonic !== false;
-        var className = definition.name || 'Class';
+        var className = definition.name || 'Class$' + classCount.toString(16);
 
         if (typeof init !== 'function') {
             init = noop;
@@ -134,6 +134,7 @@
                 return isFunction(origin[name]);
             });
         }
+        classCount ++;
         return clazz;
 
         function $callSuper(name) {
