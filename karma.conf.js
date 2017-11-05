@@ -19,21 +19,21 @@ module.exports = function(config){
             served: true
         }],
         preprocessors: {
-            'test/*.js': ['browserify']
+            'test/*.js': ['browserify', 'coverage']
         },
         browserify: {
             debug: true,
-            transforms: [ 'brfs' ]
+            transform: [ 'babelify' ]
         },
         /*
         preprocessors: {
             'test/*.js': ['coverage']
         },
-
+        */
         coverageReporter: {
             type: 'html',
             dir: 'coverage/'
-        },*/
+        },
 
         reporters: ['kjhtml'],
 
@@ -55,7 +55,8 @@ module.exports = function(config){
             'karma-chrome-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
-            'karma-browserify'
+            'karma-browserify',
+            'karma-coverage'
         ],
 
         singleRun: false,
