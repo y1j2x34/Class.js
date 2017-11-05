@@ -35,7 +35,7 @@ module.exports = function(config){
             dir: 'coverage/'
         },
 
-        reporters: ['kjhtml'],
+        reporters: ['kjhtml', 'coverage'],
 
         port: 9876,
 
