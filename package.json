@@ -4,7 +4,7 @@
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
   "scripts": {
-    "test": "node .\\node_modules\\karma\\bin\\karma start .\\karma.conf.js"
+    "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js"
   },
   "repository": {
     "type": "git",
