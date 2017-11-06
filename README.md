@@ -6,9 +6,13 @@ Class system for low level javascript which includes inheritance, mixins, inheri
 -->
 
 <div style="text-align:center">
+
 ![License](https://img.shields.io/cocoapods/l/TWPhotoPicker.svg)
+
 [![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js)
+
 [![coverate](https://coveralls.io/repos/y1j2x34/Class.js/badge.png?branch=master)](https://github.com/y1j2x34/Class.js)
+
 </div>
 
 ## Running tests
