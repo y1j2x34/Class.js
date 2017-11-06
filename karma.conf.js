@@ -49,10 +49,23 @@ module.exports = function(config){
 
         atomic_save: false,
 
-        browsers: ['Chrome'],
+        browsers: ['Chrome', 'PhantomJS_custom'],
         
+        customLaunchers: {
+            'PhantomJS_custom': {
+                base: 'PhantomJS',
+                options: {
+                    settings: {
+                        webSecurityEnabled: false
+                    }
+                },
+                debug: true
+            }
+        },
+
         plugins: [
             'karma-chrome-launcher',
+            'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
             'karma-browserify',

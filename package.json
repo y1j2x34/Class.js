@@ -4,7 +4,8 @@
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js"
+    "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js",
+    "test_phantomjs": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom --single-run true"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,7 @@
     "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-phantomjs-launcher": "^1.0.4",
     "watchify": "^3.9.0"
   },
   "dependencies": {}
