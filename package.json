@@ -4,7 +4,7 @@
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/karma/bin/karma start ./karma.conf.js",
+    "test": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers Chrome",
     "test_phantomjs": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom --single-run true"
   },
   "repository": {
@@ -19,18 +19,22 @@
   "homepage": "https://github.com/y1j2x34/Class.js#readme",
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babelify": "^8.0.0",
-    "browserify": "^14.5.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",
     "karma": "^1.7.1",
+    "karma-babel-preprocessor": "^7.0.0",
     "karma-browserify": "^5.1.1",
     "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.4",
-    "watchify": "^3.9.0"
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^2.0.5",
+    "phantomjs-polyfill-object-assign": "0.0.2",
+    "webpack": "^3.8.1"
   },
   "dependencies": {}
 }

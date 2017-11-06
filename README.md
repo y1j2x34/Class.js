@@ -1,5 +1,4 @@
 # Class.js
-Class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...
 
 <!--
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/y1j2x34/Class.js)
@@ -12,6 +11,9 @@ Class system for low level javascript which includes inheritance, mixins, inheri
 [![coverate](https://coveralls.io/repos/y1j2x34/Class.js/badge.png?branch=master)](https://github.com/y1j2x34/Class.js)
 
 </div>
+
+Class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...
+
 
 ## Running tests
 

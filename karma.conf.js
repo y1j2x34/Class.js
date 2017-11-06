@@ -1,35 +1,46 @@
 'use strict';
-module.exports = function(config){
+module.exports = function(config) {
     config.set({
         basePath: '',
 
-        frameworks: ['browserify', 'jasmine'],
+        frameworks: ['jasmine'],
 
         restartBrowserBetweenTests: false,
 
-        files: [{
-            pattern: 'test/*.js',
-            watched: true,
-            included: true,
-            served: true
-        }, {
-            pattern:'Class.js',
-            watched: true,
-            included: false,
-            served: true
-        }],
+        files: [
+            './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
+            {
+                pattern: 'test/*.js',
+                watched: true,
+                included: true,
+                served: true
+            },
+            {
+                pattern: 'Class.js',
+                watched: true,
+                included: false,
+                served: true
+            }
+        ],
         preprocessors: {
-            'test/*.js': ['browserify', 'coverage']
+            'test/*.js': ['webpack', 'sourcemap', 'coverage']
         },
-        browserify: {
-            debug: true,
-            transform: [ 'babelify' ]
+        webpack: {
+            devtool: 'inline-source-map',
+            module: {
+                rules: [
+                    {
+                        test: /\.js$/,
+                        use: {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: [['env', { browsers: 'last 2 versions' }]]
+                            }
+                        }
+                    }
+                ]
+            }
         },
-        /*
-        preprocessors: {
-            'test/*.js': ['coverage']
-        },
-        */
         coverageReporter: {
             type: 'html',
             dir: 'coverage/'
@@ -50,9 +61,9 @@ module.exports = function(config){
         atomic_save: false,
 
         browsers: ['Chrome', 'PhantomJS_custom'],
-        
+
         customLaunchers: {
-            'PhantomJS_custom': {
+            PhantomJS_custom: {
                 base: 'PhantomJS',
                 options: {
                     settings: {
@@ -68,8 +79,10 @@ module.exports = function(config){
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
-            'karma-browserify',
-            'karma-coverage'
+            'karma-webpack',
+            'karma-coverage',
+            'karma-babel-preprocessor',
+            'karma-sourcemap-loader'
         ],
 
         singleRun: false,
