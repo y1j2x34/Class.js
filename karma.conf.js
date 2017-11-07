@@ -1,5 +1,23 @@
 'use strict';
 module.exports = function(config) {
+    var reporters = ['kjhtml', 'coverage'];
+    var coverageReporters = [{
+        type: 'text-summary'
+    }];
+    if(process.env.TRAVIS){
+        console.log('On Travis sending coveralls');
+        coverageReporters.push({
+            type: 'lcov',
+            dir: 'coverage'
+        });
+        reporters.push('coveralls');
+    } else {
+        console.log('Not on Travis so not sending coveralls');
+        coverageReporters.push({
+           type: 'html',
+           dir: 'coverage'
+        });
+    }
     config.set({
         basePath: '',
 
@@ -42,11 +60,10 @@ module.exports = function(config) {
             }
         },
         coverageReporter: {
-            type: 'html',
-            dir: 'coverage/'
+            reporters: coverageReporters
         },
 
-        reporters: ['kjhtml', 'coverage'],
+        reporters: reporters,
 
         port: 9876,
 
@@ -82,7 +99,8 @@ module.exports = function(config) {
             'karma-webpack',
             'karma-coverage',
             'karma-babel-preprocessor',
-            'karma-sourcemap-loader'
+            'karma-sourcemap-loader',
+            'karma-coveralls'
         ],
 
         singleRun: false,

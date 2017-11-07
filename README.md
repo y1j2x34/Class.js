@@ -1,13 +1,15 @@
-# Class.js [![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js)
+# Class.js
 
 <!--
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/y1j2x34/Class.js)
 -->
+<!-- https://shields.io/ -->
 
 <div align="center">
 
-![License](https://img.shields.io/cocoapods/l/TWPhotoPicker.svg)
-[![coverate](https://coveralls.io/repos/y1j2x34/Class.js/badge.png?branch=master)](https://github.com/y1j2x34/Class.js)
+[![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js) 
+[![Coverage Status](https://coveralls.io/repos/github/y1j2x34/Class.js/badge.svg?branch=master)](https://coveralls.io/github/y1j2x34/Class.js?branch=master)
+![License](https://img.shields.io/npm/l/express.svg)
 
 </div>
 
@@ -181,7 +183,3 @@ flyingPuppy.smile();// smilling puppy
 
 
 ```
-
-## License
-
-MIT License
