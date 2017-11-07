@@ -17,5 +17,3 @@ install:
 
 script:
   - npm run test_phantomjs
-after_success:
-  - coveralls
