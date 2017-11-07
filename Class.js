@@ -15,6 +15,8 @@
     Class.mix = mix;
     Class.singleton = singleton;
     Class.isAssignableFrom = isAssignableFrom;
+    Class.proxy = proxy;
+    Class.members = members;
 
     var constructorFactoryCache = {};
     var classCount = 0;  
@@ -170,7 +172,58 @@
             }
         }
     }
+    
+    function mix(superclass) {
+        return new MixinBuilder(superclass);
+    }
 
+    function members(object){
+        var map = {};
+        return _membersImpl(object)
+            .filter(function(name) {
+                if (!map[name]) {
+                    map[name] = true;
+                    return true;
+                }
+                return false;
+            })
+            .filter(function(name) {
+                return name !== '$super';
+            });
+
+        function _membersImpl(object){
+            if (object === Object.prototype) {
+                return [];
+            }
+            return Object.keys(object).concat(_membersImpl(Object.getPrototypeOf(object)));
+        }
+    }
+
+    function proxy(object, handler){
+        if(!object){
+            throw new Error('cannot proxy null or undefined object' );
+        }
+        if(!(handler instanceof Function)) {
+            throw new Error('handler is not function');
+        }
+
+        var proxyobject = Object.create(object);
+        return members(object).reduce(function(proxyobject, name){
+            var member = object[name];
+            if(member instanceof Function) {
+                proxyobject[name] = _proxy(member);
+            }
+            return proxyobject;
+        }, proxyobject);
+
+        function _proxy(member){
+            function proxyfn(){
+                return handler.call(object, member, arguments);
+            }
+            proxyfn.toString = function(){return member.toString();};
+            return proxyfn;
+        }
+    }
     function createConstructor(className, init) {
         if (!constructorFactoryCache[className]) {
             // jshint evil: true
@@ -182,9 +235,6 @@
         return constructorFactoryCache[className](init);
     }
 
-    function mix(superclass) {
-        return new MixinBuilder(superclass);
-    }
     function MixinBuilder(superclass) {
         this.with = function() {
             return Array.prototype.reduce.call(
