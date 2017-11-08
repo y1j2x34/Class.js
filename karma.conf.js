@@ -28,7 +28,7 @@ module.exports = function(config) {
         files: [
             './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
             {
-                pattern: 'test/*.js',
+                pattern: 'test/main.js',
                 watched: true,
                 included: true,
                 served: true

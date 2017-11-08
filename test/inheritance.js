@@ -9,6 +9,15 @@ describe('test inheritance', () => {
         expect(() => {
             Class.extend(SuperClass, {});
         }).not.toThrow();
+        expect(() => {
+            Class.extend(SuperClass);
+        }).not.toThrow();
+        expect(() => {
+            Class.extend({});
+        }).not.toThrow();
+        expect(() => {
+            SuperClass.extend({});
+        }).not.toThrow();
     });
     it('test call parent constructor', () => {
         var beCalled = false;
@@ -54,11 +63,19 @@ describe('test inheritance', () => {
         const SubClass = Class.extend(SuperClass, {
             method: function(self) {
                 self.$callSuper('method');
+            },
+            callNotExitMethod: function(self){
+                self.$callSuper('xxxadsdsad');
             }
         });
         expect(beCalled).toBeFalsy();
         new SubClass().method();
         expect(beCalled).toBeTruthy();
+
+        expect(function(){
+            new SubClass().callNotExitMethod();
+        }).toThrow();
+        
     });
     it('test constructor call sequence', () => {
         let flag = 0;

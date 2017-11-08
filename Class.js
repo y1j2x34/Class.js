@@ -154,8 +154,12 @@
         function $super(first) {
             var self = this;
             var args = arguments;
-            if (isPythonicOn && isArgument(first)) {
-                args = slice(first, 1);
+            if (isArgument(first)) {
+                if(isPythonicOn) {
+                    args = slice(first, 1);
+                } else {
+                    args = first;
+                }
             }
             if (_isAssignable(clazz, Array)) {
                 self.push.apply(self, args);
