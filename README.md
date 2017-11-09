@@ -9,7 +9,8 @@
 
 [![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js) 
 [![Coverage Status](https://coveralls.io/repos/github/y1j2x34/Class.js/badge.svg?branch=master)](https://coveralls.io/github/y1j2x34/Class.js?branch=master)
-![License](https://img.shields.io/npm/l/express.svg)
+[![npm version](https://img.shields.io/npm/v/%40y1j2x34%2Fclass.js.svg)](https://www.npmjs.com/package/@y1j2x34/class.js)
+![MIT License](https://img.shields.io/npm/l/express.svg)
 
 </div>
 
