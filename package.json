@@ -1,5 +1,5 @@
 {
-  "name": "class.js",
+  "name": "@y1j2x34/class.js",
   "version": "1.0.0",
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
@@ -18,6 +18,11 @@
     "url": "https://github.com/y1j2x34/Class.js/issues"
   },
   "homepage": "https://github.com/y1j2x34/Class.js#readme",
+  "files": [
+    "./Class.js",
+    "./Class.min.js",
+    "./test/*"
+  ],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -41,5 +46,8 @@
     "phantomjs-polyfill-object-assign": "0.0.2",
     "webpack": "^3.8.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "directories": {
+    "test": "test"
+  }
 }
