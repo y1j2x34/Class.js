@@ -18,6 +18,9 @@
     "url": "https://github.com/y1j2x34/Class.js/issues"
   },
   "homepage": "https://github.com/y1j2x34/Class.js#readme",
+  "keywords": [
+    "class", "class.js", "proxy", "mixin", "singleton", "inheritance", "extend", "oo", "oop"
+  ],
   "files": [
     "Class.js",
     "Class.min.js",
