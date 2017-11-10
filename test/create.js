@@ -2,14 +2,24 @@ const Class = require('../Class.js');
 
 describe('create class', () => {
     it('create class', () => {
+        expect(function(){
+            Class.create();
+        }).toThrow();
+
         var Cls = Class.create({});
         expect(Cls).toBeDefined();
         expect(typeof Cls).toBe('function');
     });
     it('test singleton', () => {
+        expect(function(){
+            Class.singleton();
+        }).toThrow();
         var instance = Class.singleton({});
         expect(instance).toBeDefined();
         expect(typeof instance).toBe('object');
+        
+        var Cls = Class.create({});
+        expect(Class.singleton(Cls,{}) instanceof Cls).toBeTruthy();
     });
     it('test class name declaring', () => {
         const CLASS_NAME = 'Animal';

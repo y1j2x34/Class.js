@@ -1,15 +1,22 @@
 'use strict';
 module.exports = function(config) {
-    var path = require('path');
-    
     var babelOptions = {
-        presets: [['env', { browsers: 'last 2 versions' }]]
+        presets: [
+            [
+                'env',
+                {
+                    browsers: 'last 2 versions'
+                }
+            ]
+        ]
     };
     var reporters = ['kjhtml', 'coverage'];
-    var coverageReporters = [{
-        type: 'text-summary'
-    }];
-    if(process.env.TRAVIS){
+    var coverageReporters = [
+        {
+            type: 'text-summary'
+        }
+    ];
+    if (process.env.TRAVIS) {
         console.log('On Travis sending coveralls');
         coverageReporters.push({
             type: 'lcov',
@@ -19,8 +26,8 @@ module.exports = function(config) {
     } else {
         console.log('Not on Travis so not sending coveralls');
         coverageReporters.push({
-           type: 'html',
-           dir: 'coverage'
+            type: 'html',
+            dir: 'coverage'
         });
     }
     config.set({
@@ -46,7 +53,6 @@ module.exports = function(config) {
             }
         ],
         preprocessors: {
-            '!test/*.js': ['webpack', 'sourcemap'],
             'test/main.js': ['webpack', 'sourcemap', 'coverage']
         },
         webpack: {
@@ -55,7 +61,6 @@ module.exports = function(config) {
                 rules: [
                     {
                         test: /\.js$/,
-                        exclude: path.resolve('Class.js'),
                         use: {
                             loader: 'babel-loader',
                             options: babelOptions
@@ -69,9 +74,6 @@ module.exports = function(config) {
             instrumenters: { isparta : require('isparta') },
             instrumenter: {
                 '**/*.js': 'isparta'
-            },
-            instrumenterOptions: {
-                isparta: { babel : babelOptions }
             }
         },
 

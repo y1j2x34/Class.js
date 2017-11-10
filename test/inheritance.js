@@ -111,5 +111,9 @@ describe('test inheritance', () => {
 
         expect(Sub.VALUE).toBe(STATIC_VALUE);
     });
-    
+    it('test isAssignableFrom', () => {
+        const Parent = Class.create({});
+        const Sub = Parent.extend({});
+        expect(Sub.isAssignableFrom(Parent)).toBeTruthy();
+    });
 });
