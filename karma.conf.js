@@ -1,5 +1,10 @@
 'use strict';
 module.exports = function(config) {
+    var path = require('path');
+    
+    var babelOptions = {
+        presets: [['env', { browsers: 'last 2 versions' }]]
+    };
     var reporters = ['kjhtml', 'coverage'];
     var coverageReporters = [{
         type: 'text-summary'
@@ -41,7 +46,8 @@ module.exports = function(config) {
             }
         ],
         preprocessors: {
-            'test/*.js': ['webpack', 'sourcemap', 'coverage']
+            '!test/*.js': ['webpack', 'sourcemap'],
+            'test/main.js': ['webpack', 'sourcemap', 'coverage']
         },
         webpack: {
             devtool: 'inline-source-map',
@@ -49,18 +55,24 @@ module.exports = function(config) {
                 rules: [
                     {
                         test: /\.js$/,
+                        exclude: path.resolve('Class.js'),
                         use: {
                             loader: 'babel-loader',
-                            options: {
-                                presets: [['env', { browsers: 'last 2 versions' }]]
-                            }
+                            options: babelOptions
                         }
                     }
                 ]
             }
         },
         coverageReporter: {
-            reporters: coverageReporters
+            reporters: coverageReporters,
+            instrumenters: { isparta : require('isparta') },
+            instrumenter: {
+                '**/*.js': 'isparta'
+            },
+            instrumenterOptions: {
+                isparta: { babel : babelOptions }
+            }
         },
 
         reporters: reporters,

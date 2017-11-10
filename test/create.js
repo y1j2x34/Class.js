@@ -17,8 +17,10 @@ describe('create class', () => {
         const ClassB = Class.create({
             name: CLASS_NAME
         });
+        const singleton = Class.singleton(CLASS_NAME, {});
         expect(ClassA.name).toBe(CLASS_NAME);
         expect(ClassB.name).toBe(CLASS_NAME);
+        expect(singleton.clazz.name).toBe(CLASS_NAME);
     });
     it('test class name format', () => {
         expect(function(){

@@ -9,6 +9,15 @@
     }
 })(this, function() {
     'use strict';
+    var defineProperty = Object.defineProperty;
+    var getOwnPropertyNames = Object.getOwnPropertyNames;
+    var classNameRegex = /^[a-z\$_][\w\$]*$/i;
+    var keyfields = {
+        init: true,
+        statics: true,
+        pythonic: true,
+        name: true
+    };
 
     Class.create = createClass;
     Class.extend = extend;
@@ -68,13 +77,12 @@
         }
         if (definition) {
             var clsName = definition.name;
-            if (!/^[a-z\$_][\w\$]*$/i.test(clsName)) {
+            if (!classNameRegex.test(clsName)) {
                 throw new Error('Invalid class name: ' + clsName);
             }
         }
         return extend(Class, definition);
     }
-
     function extend(Super, definition) {
         if (arguments.length === 1) {
             if (isFunction(Super)) {
@@ -89,36 +97,38 @@
         var isPythonicOn = definition.pythonic !== false;
         var className = definition.name || 'Class$' + classCount.toString(16);
 
-        if (typeof init !== 'function') {
+        if (!isFunction(init)) {
             init = noop;
-        }
-        if (isPythonicOn) {
+        } else if (isPythonicOn) {
             init = _pythonic(init);
         }
 
-        var propertyNames = Object.getOwnPropertyNames(definition);
-        propertyNames = removeFirst(propertyNames, 'init');
-        propertyNames = removeFirst(propertyNames, 'statics');
-        propertyNames = removeFirst(propertyNames, 'pythonic');
-        propertyNames = removeFirst(propertyNames, 'name');
-
+        var propertyNames = getOwnPropertyNames(definition);
+        propertyNames = propertyNames.filter(function(name){
+            return !keyfields[name];
+        });
+        
         function F() {}
-        F.prototype = Super.prototype;
+        var superproto = F.prototype = Super.prototype;
 
         var clazz = createConstructor(className, init);
-        clazz.prototype = new F();
-
-        defineConstant(clazz.prototype, 'constructor', clazz);
-        defineConstant(clazz.prototype, 'clazz', clazz);
-        defineConstant(clazz.prototype, 'uber', Super.prototype);
-        defineConstant(clazz.prototype, '$callSuper', $callSuper);
-        defineConstant(clazz, 'superclass', Super);
-        defineConstant(clazz, 'isAssignableFrom', isAssignableFrom);
-        defineConstant(clazz, '$classdef', _extendClassdef(definition, Super));
-        defineConstant(clazz, 'extend', function(definition) {
-            return extend.call(clazz, clazz, definition);
+        var clazzproto = clazz.prototype = new F();
+        
+        defineConstants(clazzproto, {
+            constructor: clazz,
+            clazz: clazz,
+            uber: superproto,
+            $callSuper: $callSuper
         });
-        clazz.prototype.$super = $super;
+        defineConstants(clazz, {
+            superclass: Super,
+            isAssignableFrom: isAssignableFrom,
+            $classdef: _extendClassdef(definition, Super),
+            extend: function(definition) {
+                return extend.call(clazz, clazz, definition);
+            }
+        });
+        clazzproto.$super = $super;
 
         _extendStatics(clazz, statics, Super);
 
@@ -126,13 +136,13 @@
             iteratePropNames(definition, propertyNames, function(origin, name) {
                 var value = origin[name];
                 if (isFunction(value)) {
-                    clazz.prototype[name] = _pythonic(value);
+                    clazzproto[name] = _pythonic(value);
                 } else {
-                    copyDescriptor(origin, clazz.prototype, name);
+                    copyDescriptor(origin, clazzproto, name);
                 }
             });
         } else {
-            copyDescriptors(definition, clazz.prototype, propertyNames, function(origin, dest, name) {
+            copyDescriptors(definition, clazzproto, propertyNames, function(origin, dest, name) {
                 return isFunction(origin[name]);
             });
         }
@@ -140,7 +150,7 @@
         return clazz;
 
         function $callSuper(name) {
-            var fn = Super.prototype[name];
+            var fn = superproto[name];
             if (!(fn instanceof Function)) {
                 throw new Error();
             }
@@ -164,7 +174,7 @@
             if (_isAssignable(clazz, Array)) {
                 self.push.apply(self, args);
             } else {
-                var uber = Super.prototype;
+                var uber = superproto;
                 if (uber && uber.$super) {
                     var _super = uber.$super;
                     self.$super = function() {
@@ -294,12 +304,17 @@
         } else if ({ __proto__: [] } instanceof Array) {
             dest.__proto__ = supr;
         } else {
-            copyDescriptors(supr, dest, Object.getOwnPropertyNames(supr));
+            copyDescriptors(supr, dest, getOwnPropertyNames(supr));
         }
         return dest;
     }
+    function defineConstants(target, values){
+        for(var key in values){
+            defineConstant(target, key, values[key]);
+        }
+    }
     function defineConstant(target, name, value) {
-        Object.defineProperty(target, name, {
+        defineProperty(target, name, {
             value: value,
             enumerable: false,
             configurable: false,
@@ -333,7 +348,7 @@
     function copyDescriptor(origin, dest, name) {
         var descriptor = Object.getOwnPropertyDescriptor(origin, name);
         if (isDefined(descriptor)) {
-            Object.defineProperty(dest, name, descriptor);
+            defineProperty(dest, name, descriptor);
         }
     }
 
@@ -350,22 +365,6 @@
             return fn;
         };
         return decorator;
-    }
-
-    function removeFirst(array, value) {
-        if (!array) {
-            return array;
-        } else if (array instanceof Array) {
-            var index = array.indexOf(value);
-            if (index > -1) {
-                array.splice(index, 1);
-            }
-            return array;
-        } else if (isArgument(array)) {
-            return removeFirst(Array.prototype.slice.call(array, 0), value);
-        } else {
-            return array;
-        }
     }
 
     function slice(arr, index) {
