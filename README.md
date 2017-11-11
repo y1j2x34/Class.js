@@ -187,13 +187,16 @@ flyingPuppy.smile();// smilling puppy
 
 ### Proxy
 
+
 ```js
 var Cat = Class.create({
-    miao: function(){
-        console.info('miao~~~');
-        return 'miao';
+    meow: function(){
+        console.info('meow~~~');
+        return 'meow';
     }
 });
+
+// proxy object
 var cat = new Cat();
 var proxy = Class.proxy(cat, function(originObject, func, args){
     console.info('before~');
@@ -201,9 +204,25 @@ var proxy = Class.proxy(cat, function(originObject, func, args){
     console.info('after~');
     return ret;
 });
-proxy.miao(); // returns 'miao'
+proxy.meow(); // returns 'meow'
 // output:
 // before~
-// miao~~~
+// meow~~~
 // after~
+
+// proxy class
+var ProxyCat = Class.proxy(Cat, function(originalObject, func, args){
+    console.info('before~');
+    var ret = func.apply(originObject, arg);
+    console.info('after~');
+    return ret;
+});
+
+new ProxyCat().meow();
+// output:
+// before~
+// meow~~~
+// after~
+
+
 ```
