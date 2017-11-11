@@ -71,10 +71,10 @@ module.exports = function(config) {
         },
         coverageReporter: {
             reporters: coverageReporters,
-            instrumenters: { isparta : require('isparta') },
-            instrumenter: {
-                '**/*.js': 'isparta'
-            }
+            // instrumenters: { isparta : require('isparta') },
+            // instrumenter: {
+            //     '**/*.js': 'isparta'
+            // }
         },
 
         reporters: reporters,

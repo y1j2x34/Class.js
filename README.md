@@ -195,9 +195,9 @@ var Cat = Class.create({
     }
 });
 var cat = new Cat();
-var proxy = Class.proxy(cat, function(func, args){
+var proxy = Class.proxy(cat, function(originObject, func, args){
     console.info('before~');
-    var ret = func.apply(this, arg);
+    var ret = func.apply(originObject, arg);
     console.info('after~');
     return ret;
 });

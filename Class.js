@@ -220,21 +220,41 @@
         if(!(handler instanceof Function)) {
             throw new Error('handler is not function');
         }
+       if(isClass(object)){
+           return _proxyClass(object, handler);
+       } else {
+           return _proxyObject(object, handler);
+       }
+    }
 
+    function _proxyClass(clazz, handler){ 
+        return clazz.extend({
+            name: clazz.name,
+            pythonic: clazz.$classdef.pythonic,
+            init: function () {
+                this.$super(arguments);
+                return _proxyObject(this, handler);
+            }
+        });
+    }
+    function _proxyObject(object, handler){
         var proxyobject = Object.create(object);
-        return members(object).reduce(function(proxyobject, name){
+
+        return members(object).reduce(function(proxyobject, name) {
             var member = object[name];
-            if(member instanceof Function) {
+            if (member instanceof Function) {
                 proxyobject[name] = _proxy(member);
             }
             return proxyobject;
         }, proxyobject);
 
-        function _proxy(member){
-            function proxyfn(){
-                return handler.call(object, member, arguments);
+        function _proxy(member) {
+            function proxyfn() {
+                return handler.call(proxyobject, object, member, arguments);
             }
-            proxyfn.toString = function(){return member.toString();};
+            proxyfn.toString = function() {
+                return member.toString();
+            };
             return proxyfn;
         }
     }
@@ -389,7 +409,9 @@
     function isArgument(value) {
         return value && '[object Arguments]' === value.toString();
     }
-
+    function isClass(value){
+        return isFunction(value) && _isAssignable(value, Class);
+    }
     function acceptAll() {
         return true;
     }

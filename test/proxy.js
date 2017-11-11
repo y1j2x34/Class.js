@@ -1,6 +1,6 @@
 const Class = require('../Class.js');
 
-describe('test proxy', () => {
+describe('test proxy object', () => {
     var Consts = {
         ANIMAL_BITE: 'animal bite',
         MAMMAL_BITE: 'mammal bite',
@@ -96,20 +96,80 @@ describe('test proxy', () => {
     });
     it('test argument', () => {
         var VALUE = {};
-        Class.proxy(originObject, function(member, args){
+        Class.proxy(originObject, function(originObject, member, args){
             expect(args[0]).toBe(VALUE);
         }).destroy(VALUE);
     });
-    it('namespace should be originObject', () => {
+    it('handler namespace should be proxyObject', () => {
         var proxyObject = Class.proxy(originObject, function(){
-            expect(this).toBe(originObject);
+            expect(this).toBe(proxyObject);
+        });
+        proxyObject.destroy();
+    });
+    it('first argument should be originObject', () =>{
+        var proxyObject = Class.proxy(originObject, function(_originObject) {
+            expect(_originObject).toBe(originObject);
         });
         proxyObject.destroy();
     });
     it('test return value', () => {
-        var proxyobject = Class.proxy(originObject, function(func, args) {
-            return func.apply(this, args);
+        var proxyobject = Class.proxy(originObject, function(originObject, func, args) {
+            return func.apply(originObject, args);
         });
         expect(proxyobject.destroy()).toBe(Consts.SONAR_DESTROYED);
+    });
+});
+describe('test proxy class', () => {
+    var Cat;
+    beforeAll(() => {
+        Cat = Class.create('Cat', {
+            statics: {
+                MEOW: 'MEOW'
+            },
+            meow: function() {
+                return Cat.MEOW;
+            }
+        });
+    });
+
+    it('Class.proxy should not to throw errors', () => {
+        expect(function(){
+            Class.proxy(Cat, function() {});
+        }).not.toThrow();
+    });
+
+    it('proxy class should be assignable from Cat', () => {
+        var ProxyCat = Class.proxy(Cat, function(){});
+        expect(ProxyCat.isAssignableFrom(Cat));
+    });
+    it('handler should be called', () => {
+        var obj = {
+            handle: function(){}
+        };
+        var handlerSpy = spyOn(obj, 'handle');
+        var ProxyCat = Class.proxy(Cat, function(){
+            obj.handle();
+        });
+        new ProxyCat().meow();
+        expect(handlerSpy).toHaveBeenCalled();
+    });
+    it('original function should be called', () => {
+        var ProxyCat = Class.proxy(Cat, function(originObject, func, args) {
+            return func.apply(originObject, args);
+        });
+        var meowSpy = spyOn(ProxyCat.prototype, 'meow');
+        new ProxyCat().meow();
+        expect(meowSpy).toHaveBeenCalled();
+    });
+    
+    it('property of proxy object should not access from original object', () => {
+        var CAT_NAME = 'meow';
+        var ProxyCat = Class.proxy(Cat, function(originObject) {
+            expect(this.name).toBe(CAT_NAME);
+            expect(originObject.name).toBeUndefined();
+        });
+        var cat = new ProxyCat();
+        cat.name = CAT_NAME;
+        cat.meow();
     });
 });
