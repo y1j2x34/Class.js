@@ -31,11 +31,6 @@
                 return !fn(input);
             };
         },
-        or: function(fn, fm) {
-            return function(input) {
-                return fn(input) || fm(input);
-            };
-        },
         and: function(fn, fm) {
             return function(input) {
                 return fn(input) && fm(input);
@@ -516,12 +511,7 @@
         });
     }
 
-    function copyDescriptors(origin, dest, propNames, accept) {
-        if (isFunction(accept)) {
-            propNames = propNames.filter(function(name) {
-                return accept(origin, dest, name);
-            });
-        }
+    function copyDescriptors(origin, dest, propNames) {
         propNames.forEach(function(name) {
             copyDescriptor(origin, dest, name);
         });

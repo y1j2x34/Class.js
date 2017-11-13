@@ -40,6 +40,9 @@ describe('test decorate', () => {
         expect(() => {
             Airplane.decorate(function(){});
         }).toThrow();
+        expect(() => {
+            Class.decorate();
+        }).toThrow();
     });
     it('decorate contrustor: decorator should be called', () => {
         var decorators = {
@@ -190,5 +193,26 @@ describe('test decorate', () => {
             new KlassDecorator().fly();
         }).not.toThrow();
         expect(thrownSpy).toHaveBeenCalled();
+    });
+    it('decorate object: should not throw', () => {
+        var airplane = new Airplane();
+        expect(() => {
+            Class.decorate(airplane, {});
+        }).not.toThrow();
+    });
+    it('decorate object: "*" decorates all methods', () => {
+        var airplane = new Airplane();
+        var decorator = {
+            before: function(){}
+        };
+        var beforeSpy = spyOn(decorator, 'before');
+
+        Class.decorate(airplane, {
+            '*': decorator
+        });
+
+        airplane.fly();
+
+        expect(beforeSpy).toHaveBeenCalled();
     });
 });
