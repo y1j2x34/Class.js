@@ -7,21 +7,32 @@
 
 <div align="center">
 
-[![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js) 
+[![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js)
 [![Coverage Status](https://coveralls.io/repos/github/y1j2x34/Class.js/badge.svg?branch=master)](https://coveralls.io/github/y1j2x34/Class.js?branch=master)
 [![npm version](https://img.shields.io/npm/v/%40y1j2x34%2Fclass.js.svg)](https://www.npmjs.com/package/@y1j2x34/class.js)
+[![Dependency Status](https://david-dm.org/y1j2x34/Class.js.svg)](https://david-dm.org/y1j2x34/Class.js)
+[![Dev Dependency Status](https://david-dm.org/y1j2x34/Class.js/dev-status.svg)](https://david-dm.org/y1j2x34/Class.js#info=devDependencies)
 ![MIT License](https://img.shields.io/npm/l/express.svg)
 
 </div>
 
 Class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...
 
+## Setup
+
+to setup the project for local development start with these commands in your terminal.
+
+```sh
+git clone https://github.com/y1j2x34/Class.js
+cd Class.js/
+npm install
+```
 
 ## Running tests
 
 To execute all unit tests, use:
 
-```shell
+```sh
 npm run test
 ```
 
