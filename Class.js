@@ -9,8 +9,45 @@
     }
 })(this, function() {
     'use strict';
-    var defineProperty = Object.defineProperty;
-    var getOwnPropertyNames = Object.getOwnPropertyNames;
+    /**
+     * @callback proxyhandler
+     * 
+     * @param {object} originalObject
+     * @param {function} func
+     * @param {Argument|Array} args
+     */
+
+    /**
+     * @typedef {object} Decorator
+     * 
+     * @property {function} before
+     * @property {function} returns
+     * @property {function} thrown
+     * @property {function} after
+     */
+    var _ = {
+        not: function(fn) {
+            return function(input) {
+                return !fn(input);
+            };
+        },
+        or: function(fn, fm) {
+            return function(input) {
+                return fn(input) || fm(input);
+            };
+        },
+        and: function(fn, fm) {
+            return function(input) {
+                return fn(input) && fm(input);
+            };
+        }
+    };
+
+    var Object$defineProperty = Object.defineProperty;
+    var Object$getOwnPropertyNames = Object.getOwnPropertyNames;
+    var Object$create = Object.create;
+    var Object$assign = Object.assign;
+
     var classNameRegex = /^[a-z\$_][\w\$]*$/i;
     var keyfields = {
         init: true,
@@ -26,13 +63,28 @@
     Class.isAssignableFrom = isAssignableFrom;
     Class.proxy = proxy;
     Class.members = members;
+    Class.decorate = decorate;
+    Class.configure = configure;
 
     var constructorFactoryCache = {};
-    var classCount = 0;  
+    var classCount = 0;
+    var defaultConfiguration = {
+        pythonic: true 
+    };
     return Class;
-
+    /**
+     * @class 
+     */
     function Class() {}
-
+    /**
+     * @param {object} options
+     * @param {boolean} [options.pythonic=true]
+     * @returns {Class}
+     */
+    function configure(options){
+        Object$assign(options || {});
+        return Class;
+    }
     function isAssignableFrom(SuperClass) {
         // jshint validthis: true
         return _isAssignable(this, SuperClass);
@@ -94,26 +146,27 @@
         }
         var init = definition.init;
         var statics = definition.statics;
-        var isPythonicOn = definition.pythonic !== false;
+        var isPythonicOn = definition.pythonic = typeof definition.pythonic === 'boolean' ? definition.pythonic : defaultConfiguration.pythonic;
+
         var className = definition.name || 'Class$' + classCount.toString(16);
 
         if (!isFunction(init)) {
-            init = noop;
-        } else if (isPythonicOn) {
+            init = defaultInit;
+        }
+        if (isPythonicOn) {
             init = _pythonic(init);
         }
 
-        var propertyNames = getOwnPropertyNames(definition);
-        propertyNames = propertyNames.filter(function(name){
+        var propertyNames = Object$getOwnPropertyNames(definition);
+        propertyNames = propertyNames.filter(function(name) {
             return !keyfields[name];
         });
-        
-        function F() {}
-        var superproto = F.prototype = Super.prototype;
+
+        var superproto = Super.prototype;
 
         var clazz = createConstructor(className, init);
-        var clazzproto = clazz.prototype = new F();
-        
+        var clazzproto = (clazz.prototype = Object$create(superproto));
+
         defineConstants(clazzproto, {
             constructor: clazz,
             clazz: clazz,
@@ -124,48 +177,41 @@
             superclass: Super,
             isAssignableFrom: isAssignableFrom,
             $classdef: _extendClassdef(definition, Super),
-            extend: function(definition) {
-                return extend.call(clazz, clazz, definition);
-            }
+            extend: extend.bind(clazz, clazz),
+            decorate: decorate.bind(clazz, clazz)
         });
         clazzproto.$super = $super;
 
         _extendStatics(clazz, statics, Super);
 
         if (isPythonicOn) {
-            iteratePropNames(definition, propertyNames, function(origin, name) {
-                var value = origin[name];
-                if (isFunction(value)) {
-                    clazzproto[name] = _pythonic(value);
-                } else {
-                    copyDescriptor(origin, clazzproto, name);
-                }
+            propertyNames.filter(_isFunction).forEach(function(name) {
+                clazzproto[name] = _pythonic(definition[name]);
             });
-        } else {
-            copyDescriptors(definition, clazzproto, propertyNames, function(origin, dest, name) {
-                return isFunction(origin[name]);
-            });
+            propertyNames = propertyNames.filter(_.not(_isFunction));
         }
-        classCount ++;
+        copyDescriptors(definition, clazzproto, propertyNames);
+        classCount++;
         return clazz;
-
+        function _isFunction(name) {
+            return isFunction(definition[name]);
+        }
         function $callSuper(name) {
             var fn = superproto[name];
-            if (!(fn instanceof Function)) {
+            if (!isFunction(fn)) {
                 throw new Error();
             }
             var args = arguments[1];
             if (!isArgument(args)) {
                 args = slice(arguments, 1);
             }
-
             return fn.apply(this, args);
         }
         function $super(first) {
             var self = this;
             var args = arguments;
             if (isArgument(first)) {
-                if(isPythonicOn) {
+                if (isPythonicOn) {
                     args = slice(first, 1);
                 } else {
                     args = first;
@@ -186,63 +232,187 @@
             }
         }
     }
-    
+
     function mix(superclass) {
         return new MixinBuilder(superclass);
     }
 
-    function members(object){
+    function members(object) {
         var map = {};
-        return _membersImpl(object)
-            .filter(function(name) {
-                if (!map[name]) {
-                    map[name] = true;
-                    return true;
-                }
-                return false;
-            })
-            .filter(function(name) {
-                return name !== '$super';
-            });
+        return _membersImpl(object).filter(_.and(notexist, not$super));
 
-        function _membersImpl(object){
+        function _membersImpl(object) {
             if (object === Object.prototype) {
                 return [];
             }
             return Object.keys(object).concat(_membersImpl(Object.getPrototypeOf(object)));
         }
-    }
-
-    function proxy(object, handler){
-        if(!object){
-            throw new Error('cannot proxy null or undefined object' );
+        function notexist(name) {
+            if (!map[name]) {
+                map[name] = true;
+                return true;
+            }
+            return false;
         }
-        if(!(handler instanceof Function)) {
+        function not$super(name) {
+            return name !== '$super';
+        }
+    }
+    /**
+     * 
+     * @param {function|object} object 
+     * @param {(Object.<string, Decorator|function>)} decorators 
+     */
+    function decorate(object, decorators) {
+        if (!object) {
+            throw new Error('cannot decorate on null or undefined');
+        }
+        if (!decorators) {
+            throw new Error('decorators is undefined');
+        }
+        if(!isObject(decorators)){
+            throw new Error('Illegal argument: decorators');
+        }
+
+        if (isClass(object)) {
+            return _decorateClass(object, decorators);
+        } else {
+            return _decorateObject(object, decorators);
+        }
+        function _decorateClass(clazz, decorators) {
+            delete decorators.clazz;
+            delete decorators.uber;
+            delete decorators.$callSuper;
+            
+            var init;
+            if(_hasConstructorDecorator(decorators)) {
+                var constructorDecorator = decorators.constructor;
+                delete decorators.constructor;
+                delete constructorDecorator.returns;
+                if(clazz.$classdef.pythonic){
+                    var _before = constructorDecorator.before;
+                    if(isFunction(_before)){
+                        constructorDecorator.before = _beforeDec;
+                    }
+                }
+                init = _decorate(constructorDecorator, defaultInit);
+            }
+            var DecorateClass  = Class.extend(clazz, {init: init});
+            
+            DecorateClass.prototype = _decorateObject(Object$create(DecorateClass.prototype), decorators);
+            return DecorateClass;
+
+            function _beforeDec(){
+                // jshint validthis: true
+                var newargs = _before.apply(this, slice(arguments, 1));
+                if(newargs){
+                    newargs.unshift(this);
+                }
+                return newargs;
+            }
+            function _hasConstructorDecorator(decorators){
+                var constructorDecorator = decorators.constructor;
+                if(!isFunction(constructorDecorator)){
+                    return true;
+                } else {
+                    return Object$getOwnPropertyNames(decorators).indexOf('constructor') !== -1;
+                }
+            }
+        }
+        
+        function _decorateObject(object, decorators) {
+            var defaultDecorator = decorators['*'];
+
+            delete decorators['*'];
+
+            for (var key in decorators) {
+                var decorator = decorators[key];
+                var fn = object[key];
+                if (!isFunction(fn)) {
+                    throw new Error('You must decorate on a function');
+                }
+                object[key] = _decorate(decorator, fn);
+            }
+            if (defaultDecorator) {
+                members(object)
+                    .filter(function(name) {
+                        return !decorators[name] && isFunction(object[name]);
+                    })
+                    .forEach(function(name) {
+                        object[name] = _decorate(defaultDecorator, object[name]);
+                    });
+            }
+
+            return object;
+        }
+    }
+    /**
+     * 
+     * 
+     * @param {Decorator|function} decorator 
+     * @param {function} fn 
+     * @returns {function} decorated function
+     */
+    function _decorate(decorator, fn) {
+        if (isFunction(decorator)) {
+            return function() {
+                return decorator.call(this, fn, arguments);
+            };
+        } else {
+            var before = decorator.before || _arguments;
+            var after = decorator.after || noop;
+            var thrown = decorator.thrown || _thrown;
+            var returns = decorator.returns || identity;
+            return function() {
+                var returnvalue;
+                var newarguments = before.apply(this, arguments) || arguments;
+
+                try {
+                    returnvalue = fn.apply(this, newarguments);
+                    returnvalue = returns.call(this, returnvalue);
+                } catch (error) {
+                    thrown.call(this, error);
+                }
+                after.call(this, returnvalue);
+                return returnvalue;
+            };
+        }
+    }
+    /**
+     * 
+     * @param {object|function} object 
+     * @param {proxyhandler} handler 
+     */
+    function proxy(object, handler) {
+        if (!object) {
+            throw new Error('cannot proxy null or undefined object');
+        }
+        if (!isFunction(handler)) {
             throw new Error('handler is not function');
         }
-       if(isClass(object)){
-           return _proxyClass(object, handler);
-       } else {
-           return _proxyObject(object, handler);
-       }
+        if (isClass(object)) {
+            return _proxyClass(object, handler);
+        } else {
+            return _proxyObject(object, handler);
+        }
     }
 
-    function _proxyClass(clazz, handler){ 
+    function _proxyClass(clazz, handler) {
         return clazz.extend({
             name: clazz.name,
             pythonic: clazz.$classdef.pythonic,
-            init: function () {
+            init: function() {
                 this.$super(arguments);
                 return _proxyObject(this, handler);
             }
         });
     }
-    function _proxyObject(object, handler){
-        var proxyobject = Object.create(object);
+    function _proxyObject(object, handler) {
+        var proxyobject = Object$create(object);
 
         return members(object).reduce(function(proxyobject, name) {
             var member = object[name];
-            if (member instanceof Function) {
+            if (isFunction(member)) {
                 proxyobject[name] = _proxy(member);
             }
             return proxyobject;
@@ -285,19 +455,23 @@
         return Class.extend(c, wrapClassM.$classdef);
 
         function _wrap(superclass, name) {
-            var pythonic = superclass.$classdef.pythonic !== false;
+            var pythonic = superclass.$classdef.pythonic;
             return Class.extend(superclass, {
                 name: name,
                 pythonic: pythonic,
-                init: pythonic? pythonicInit: normalInit
+                init: pythonic ? pythonicInit : normalInit
             });
-            function pythonicInit(){
+            function pythonicInit() {
                 superclass.apply(this, slice(arguments, 1)); // jshint ignore: line
             }
-            function normalInit(){
+            function normalInit() {
                 superclass.apply(this, arguments); // jshint ignore: line
             }
         }
+    }
+    function defaultInit(){
+        // jshint validthis: true
+        this.$super(arguments);
     }
     function _isAssignable(from, SuperClass) {
         if (!SuperClass || !from) {
@@ -306,10 +480,10 @@
         if (from === SuperClass || from.superclass === SuperClass) {
             return true;
         }
-        return Object.create(from.prototype) instanceof SuperClass;
+        return Object$create(from.prototype) instanceof SuperClass;
     }
     function _extendClassdef(target, Superclass) {
-        return Object.assign({}, Superclass.$classdef, target);
+        return Object$assign({}, Superclass.$classdef, target);
     }
     function _extendStatics(SubClass, statics, SuperClass) {
         if (!statics) {
@@ -324,17 +498,17 @@
         } else if ({ __proto__: [] } instanceof Array) {
             dest.__proto__ = supr;
         } else {
-            copyDescriptors(supr, dest, getOwnPropertyNames(supr));
+            copyDescriptors(supr, dest, Object$getOwnPropertyNames(supr));
         }
         return dest;
     }
-    function defineConstants(target, values){
-        for(var key in values){
+    function defineConstants(target, values) {
+        for (var key in values) {
             defineConstant(target, key, values[key]);
         }
     }
     function defineConstant(target, name, value) {
-        defineProperty(target, name, {
+        Object$defineProperty(target, name, {
             value: value,
             enumerable: false,
             configurable: false,
@@ -342,33 +516,21 @@
         });
     }
 
-    function iteratePropNames(origin, propNames, callback) {
-        if (!isFunction(callback)) {
-            callback = noop;
+    function copyDescriptors(origin, dest, propNames, accept) {
+        if (isFunction(accept)) {
+            propNames = propNames.filter(function(name) {
+                return accept(origin, dest, name);
+            });
         }
-        if (isString(propNames)) {
-            callback(origin, propNames);
-        }
-        for (var i = 0; i < propNames.length; i++) {
-            callback(origin, propNames[i]);
-        }
-    }
-
-    function copyDescriptors(origin, dest, propNames, filter) {
-        if (!isFunction(filter)) {
-            filter = acceptAll;
-        }
-        iteratePropNames(origin, propNames, function(origin, name) {
-            if (filter(origin, dest, name)) {
-                copyDescriptor(origin, dest, name);
-            }
+        propNames.forEach(function(name) {
+            copyDescriptor(origin, dest, name);
         });
     }
 
     function copyDescriptor(origin, dest, name) {
         var descriptor = Object.getOwnPropertyDescriptor(origin, name);
         if (isDefined(descriptor)) {
-            defineProperty(dest, name, descriptor);
+            Object$defineProperty(dest, name, descriptor);
         }
     }
 
@@ -378,10 +540,10 @@
             var args = [self].concat(toArray(arguments));
             return fn.apply(self, args);
         };
-        decorator.toString = function(){
+        decorator.toString = function() {
             return fn.toString();
         };
-        decorator.valueOf = function(){
+        decorator.valueOf = function() {
             return fn;
         };
         return decorator;
@@ -409,12 +571,20 @@
     function isArgument(value) {
         return value && '[object Arguments]' === value.toString();
     }
-    function isClass(value){
+    function isClass(value) {
         return isFunction(value) && _isAssignable(value, Class);
     }
-    function acceptAll() {
-        return true;
+    function isObject(value){
+        return typeof value === 'object';
     }
-
     function noop() {}
+    function identity(value) {
+        return value;
+    }
+    function _thrown(error) {
+        throw error;
+    }
+    function _arguments() {
+        return arguments;
+    }
 });

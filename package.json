@@ -1,11 +1,12 @@
 {
   "name": "@y1j2x34/class.js",
-  "version": "1.0.1-rc.1",
+  "version": "1.0.2-rc.1",
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
   "scripts": {
     "test": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers Chrome",
     "test_phantomjs": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom --single-run true",
+    "test_dev": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom",
     "minify": "node ./node_modules/gulp/bin/gulp minify"
   },
   "repository": {
@@ -19,7 +20,7 @@
   },
   "homepage": "https://github.com/y1j2x34/Class.js#readme",
   "keywords": [
-    "class", "class.js", "proxy", "mixin", "singleton", "inheritance", "extend", "oo", "oop"
+    "class", "class.js", "proxy", "decorator", "mixin", "singleton", "inheritance", "extend", "oo", "oop"
   ],
   "files": [
     "Class.js",

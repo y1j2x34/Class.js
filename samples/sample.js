@@ -1,6 +1,6 @@
 'use strict';
 
-var Class = require('./Class');
+var Class = require('../Class');
 
 var Animal = Class.create('Animal', {
     init: function(self, age) {
@@ -62,9 +62,9 @@ console.info(CustomArray.isAssignableFrom(Array));
 
 var ExtArray = Class.extend(CustomArray, {
     name: 'ExtArray',
-    init: function(self) {
-        self.$super(arguments);
-    },
+    // init: function(self) {
+    //     self.$super(arguments);
+    // },
     toString: function(self) {
         return self.clazz.name + ': ' + self.$callSuper('toString');
     }
@@ -114,4 +114,20 @@ console.info(new ExtArray(4, 5, 6, 7, 8, 9).toString());
     var X = Class.mix(MySuperClass).with(MyMixin);
     new X().hello();
     console.info(X.prototype);
+})();
+(function(){
+var input = {};
+var output;
+var SuperClass = Class.create({
+    init: function(self, arg) {
+        output = arg;
+    }
+});
+var SubClass = Class.extend(SuperClass, {
+    init: function(self, arg) {
+        self.$super(arguments);
+    }
+});
+new SubClass(input);
+console.info(input === output);
 })();

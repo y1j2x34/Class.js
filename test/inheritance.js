@@ -116,4 +116,9 @@ describe('test inheritance', () => {
         const Sub = Parent.extend({});
         expect(Sub.isAssignableFrom(Parent)).toBeTruthy();
     });
+    it('test inheritance to Array', () => {
+        var MyArray = Class.extend(Array);
+        var arr = new MyArray(1,2,3,4,5,6);
+        expect(arr.length).toBe(6);
+    });
 });

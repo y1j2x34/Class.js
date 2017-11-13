@@ -1,5 +1,5 @@
 'use strict';
-var Class = require('./Class');
+var Class = require('../Class');
 console.info = function(){
     console.log.apply(console, arguments);
     // console.error(new Error());
@@ -85,7 +85,7 @@ var batman = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
 });
 
 batman.fly(); // I am batman, I can fly to anywhere on the earth
-batman.bite(); // mammal bite
+batman.bite(); // animal bite
 batman.landing(); // flyable landing
-batman.eat(); // bird like to eat worms
+batman.eat(); // puppy eat
 batman.smile();// smilling puppys
