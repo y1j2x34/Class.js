@@ -237,3 +237,98 @@ new ProxyCat().meow();
 
 
 ```
+
+### Decorator
+
+```js
+var Airplane = Class.create('Airplane', {
+    init: function(){
+        console.info('new airplane');
+    },
+    fly: function(self, where) {
+        console.info('fly above the ' + where);
+    },
+    landing: function() {
+        console.info('landing');
+    }
+});
+```
+
+```js
+var DecorateAirplane = Class.decorate(Airplane, {
+    fly: function(fn, arguments){
+        console.info('before');
+        return fn.call(this, ['mars']);
+    }
+});
+new DecorateAirplane().fly('earth');
+// output:
+// new airplane
+// before
+// fly above the mars
+```
+
+```js
+var DecorateAirplane = Class.decorate(Airplane, {
+    fly: {
+        before: function(where) {
+            console.info(where, 'is too dangerous,please transfer to mars!');
+            return ['mars'];
+        },
+        returns: function() {
+            return true;
+        },
+        thrown: function(error) {
+            console.error('an error occurred', error);
+            throw error; // after() will not be called;
+        },
+        after: function(returnvalue) {
+            console.info('complete without errors, returns: ', returnvalue);
+        }
+    },
+});
+new DecorateAirplane().fly('earth');
+// output:
+// new airplane
+// earth is too dangerous,please transfer to mars!
+// fly above the mars
+// complete without errors, returns: true
+```
+
+```js
+var DecorateAirplane = Class.decorate(Airplane, {
+    '*': {
+        before: function(){
+            console.info('before any method');
+        }
+    }
+})
+new DecorateAirplane().fly('earth');
+// output:
+// before any method
+// fly above the earth
+```
+
+```js
+var DecorateAirplane = Class.decorate(Airplane, {
+    constructor: {
+        before: function(){
+            console.info('before init');
+        },
+        // This will be ignored
+        returns: function(){
+        },
+        thrown: function(error){
+            console.error('an error occurred', error);
+        },
+        after: function(instance){
+            console.info('after init', instance);
+        }
+    }
+});
+new DecorateAirplane();
+// output :
+// before init
+// new airplane
+// after init {...}
+```
