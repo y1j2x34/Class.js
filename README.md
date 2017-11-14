@@ -332,3 +332,11 @@ new DecorateAirplane();
 // new airplane
 // after init {...}
 ```
+
+### Configuration
+
+```js
+Class.configure({
+    pythonic: false // set default value of pythonic to false
+});
+```

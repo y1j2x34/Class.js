@@ -61,21 +61,3 @@ console.info(ret);
 console.info('==============');
 
 airplane.landing();
-
-
-var INITIAL_VALUE = 0;
-var decorator = {
-    before: function(num) {
-        return [num + 1];
-    }
-};
-var Klass = Class.create({
-    init: function(self, num) {
-        console.info('input num', num);
-    }
-});
-var KlassDecorator = Klass.decorate({
-    constructor: decorator
-});
-
-new KlassDecorator(INITIAL_VALUE);
