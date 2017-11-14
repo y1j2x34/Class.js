@@ -290,7 +290,7 @@
                         constructorDecorator.before = _beforeDec;
                     }
                 }
-                init = _decorate(constructorDecorator, defaultInit);
+                init = _decorate(constructorDecorator, defaultInit, true);
             }
             var DecorateClass  = Class.extend(clazz, {init: init});
             
@@ -346,9 +346,10 @@
      * 
      * @param {Decorator|function} decorator 
      * @param {function} fn 
+     * @param {boolean} isConstructor
      * @returns {function} decorated function
      */
-    function _decorate(decorator, fn) {
+    function _decorate(decorator, fn, isConstructor) {
         if (isFunction(decorator)) {
             return function() {
                 return decorator.call(this, fn, arguments);
@@ -368,8 +369,13 @@
                 } catch (error) {
                     thrown.call(this, error);
                 }
-                after.call(this, returnvalue);
-                return returnvalue;
+                if(isConstructor){
+                    after.call(this, this);
+                    return this;
+                } else {
+                    after.call(this, returnvalue);
+                    return returnvalue;
+                }
             };
         }
     }
@@ -380,10 +386,10 @@
      */
     function proxy(object, handler) {
         if (!object) {
-            throw new Error('cannot proxy null or undefined object');
+            throw new Error('object is required');
         }
         if (!isFunction(handler)) {
-            throw new Error('handler is not function');
+            throw new Error('handler is not a function');
         }
         if (isClass(object)) {
             return _proxyClass(object, handler);
