@@ -33,7 +33,13 @@ npm install
 To execute all unit tests, use:
 
 ```sh
-npm run test
+npm test
+```
+
+or
+
+```sh
+npm run test_phantomjs
 ```
 
 ## Examples
