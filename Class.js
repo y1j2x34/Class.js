@@ -25,6 +25,16 @@
      * @property {function} thrown
      * @property {function} after
      */
+    /**
+     * @typedef {object} ClassDefinition
+     * 
+     * @property {string} [name=Class$n] class name 
+     * @property {function} [init] constructor
+     * @property {boolean} [pythonic=true] python style
+     * @property {object} [statics] statics
+     * @property {any} ..    members
+     */
+
     var _ = {
         not: function(fn) {
             return function(input) {
@@ -84,7 +94,11 @@
         // jshint validthis: true
         return _isAssignable(this, SuperClass);
     }
-
+    /**
+     * 
+     * @param {string|function} nameOrSuperclass 
+     * @param {ClassDefinition} definition 
+     */
     function singleton(nameOrSuperclass, definition) {
         var Cls;
         switch (arguments.length) {
@@ -104,7 +118,11 @@
         }
         return new Cls();
     }
-
+    /**
+     * 
+     * @param {string} [name] 
+     * @param {ClassDefinition} definition 
+     */
     function createClass(name, definition) {
         var args = arguments;
         switch (args.length) {
@@ -130,6 +148,11 @@
         }
         return extend(Class, definition);
     }
+    /**
+     * 
+     * @param {function} Super 
+     * @param {ClassDefinition} definition 
+     */
     function extend(Super, definition) {
         if (arguments.length === 1) {
             if (isFunction(Super)) {
@@ -200,6 +223,13 @@
             if (!isArgument(args)) {
                 args = slice(arguments, 1);
             }
+            if(Super.$classdef.pythonic){
+                if(!isPythonicOn){
+                    args = [this].concat(toArray(args));
+                }
+            } else if(isPythonicOn) {
+                args = slice(args, 1);
+            }
             return fn.apply(this, args);
         }
         function $super(first) {
@@ -227,7 +257,10 @@
             }
         }
     }
-
+    /**
+     * 
+     * @param {function} superclass 
+     */
     function mix(superclass) {
         return new MixinBuilder(superclass);
     }
@@ -341,8 +374,8 @@
             return object;
         }
     }
-    /**
-     * 
+
+    /*
      * 
      * @param {Decorator|function} decorator 
      * @param {function} fn 
