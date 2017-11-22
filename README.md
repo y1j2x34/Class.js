@@ -5,6 +5,7 @@
 -->
 <!-- https://shields.io/ -->
 
+
 <div align="center">
 
 [![Build Status](https://travis-ci.org/y1j2x34/Class.js.svg?branch=master)](https://travis-ci.org/y1j2x34/Class.js)
@@ -345,4 +346,28 @@ new DecorateAirplane();
 Class.configure({
     pythonic: false
 });
+```
+
+### enum
+
+```js
+var Color = Class.createEnum({
+    YELLOW: ['#FFFF00'],
+    GREEN: ['#00FF00'],
+    BLUE: ['#0000FF'],
+    RED: ['#FF0000']
+}, {
+    pythonic: false,
+    init: function(hex){
+        this.hex = hex;
+    }
+});
+console.info(Color.RED instanceof Color); // true
+console.info(Color.RED.hex === '#FF0000'); // true
+```
+
+```js
+var State = Class.createEnum(['Stopped','Running', 'Paused']);
+console.info(State.Stopped instanceof State); // true
+console.info(State.values());// [Stopped {}, Running {}, Paused {} ]
 ```

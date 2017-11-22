@@ -61,21 +61,27 @@
         name: true
     };
 
-    Class.create = createClass;
-    Class.extend = extend;
     Class.mix = mix;
-    Class.singleton = singleton;
-    Class.isAssignableFrom = isAssignableFrom;
     Class.proxy = proxy;
+    Class.extend = extend;
     Class.members = members;
     Class.decorate = decorate;
+    Class.create = createClass;
     Class.configure = configure;
+    Class.singleton = singleton;
+    Class.createEnum = createEnum;
+    Class.newInstance = newInstance;
+    Class.isAssignableFrom = isAssignableFrom;
+    Class.isEnum = isEnum;
 
     var constructorFactoryCache = {};
     var classCount = 0;
     var defaultConfiguration = {
         pythonic: true 
     };
+    var EnumClass = createClass('Enum', {
+        pythonic: false
+    });
     return Class;
     /**
      * @class 
@@ -96,10 +102,28 @@
     }
     /**
      * 
+     * @param {function} Clazz 
+     */
+    function isEnum(Clazz){
+        return _isAssignable(Clazz, EnumClass);
+    }
+    /**
+     * 
+     * @param {function} Clazz 
+     * @param {Arguments|any[]} args 
+     */
+    function newInstance(Clazz, args){
+        var instance = Object.create(Clazz.prototype);
+        Clazz.apply(instance, args);
+        return instance;
+    }
+    /**
+     * 
      * @param {string|function} nameOrSuperclass 
      * @param {ClassDefinition} definition 
+     * @param {Arguments|any[]} args
      */
-    function singleton(nameOrSuperclass, definition) {
+    function singleton(nameOrSuperclass, definition, args) {
         var Cls;
         switch (arguments.length) {
             case 0:
@@ -116,7 +140,7 @@
                     throw new Error('Illegal arguments');
                 }
         }
-        return new Cls();
+        return newInstance(Cls, args);
     }
     /**
      * 
@@ -161,6 +185,9 @@
                 definition = Super;
                 Super = Class;
             }
+        }
+        if(!definition){
+            definition = {};
         }
         var init = definition.init;
         var statics = definition.statics;
@@ -227,7 +254,7 @@
                 if(!isPythonicOn){
                     args = [this].concat(toArray(args));
                 }
-            } else if(isPythonicOn) {
+            } else if(isPythonicOn){
                 args = slice(args, 1);
             }
             return fn.apply(this, args);
@@ -257,6 +284,45 @@
             }
         }
     }
+    /**
+     * 
+     * @param {string[]|(Object.<string,Arguments|any[]>)} names 
+     * @param {ClassDefinition} definition 
+     */
+    function createEnum(names, definition) {
+        if(isArray(names)){
+            names = names.reduce(function(obj, name){
+                obj[name] = [];
+                return obj;
+            }, {});
+        } else if(!isObject(names)){
+            throw new Error('illegal enum names : ' + names);
+        }
+        var enums = [];
+        var EnumClazz = EnumClass.extend(definition).extend({
+            name: definition ? definition.name : undefined,
+            statics: {
+                values: function(){
+                    return enums;
+                }
+            }
+        });
+        
+        for(var name in names){
+            var args = names[name];
+            if(!isArgument(args) && !isArray(args)){
+                throw new Error('invalid enum argument type, name:' + name + ', args: ' + args);
+            }
+            var enumInstance = Class.singleton(EnumClazz, {_name: name, name: name}, args);
+            enumInstance.name = enum$name;
+            enumInstance.toString = enum$name;
+            defineConstant(EnumClazz, name, enumInstance);
+            enums.push(enumInstance);
+        }
+        
+        return EnumClazz;
+    }
+    function enum$name(){return this._name;}; // jshint ignore: line
     /**
      * 
      * @param {function} superclass 
@@ -604,7 +670,14 @@
         return isFunction(value) && _isAssignable(value, Class);
     }
     function isObject(value){
-        return typeof value === 'object';
+        return value !== null && typeof value === 'object';
+    }
+    function isArray(value){
+        if(Array.isArray){
+            return Array.isArray(value);
+        } else {
+            return value instanceof Array;
+        }
     }
     function noop() {}
     function identity(value) {
