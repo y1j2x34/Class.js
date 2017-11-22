@@ -1,6 +1,6 @@
 {
   "name": "@y1j2x34/class.js",
-  "version": "1.0.2-rc.1",
+  "version": "1.0.2-rc.2",
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
   "main": "index.js",
   "scripts": {
