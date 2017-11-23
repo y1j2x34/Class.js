@@ -1,0 +1,21 @@
+{
+    "presets": [
+        [
+            "env",
+            {
+                "browsers": ["last 2 versions", "ie 10"],
+                "modules": false
+            }
+        ]
+    ],
+    "plugins": [
+        [
+            "transform-runtime",
+            {
+                "helpers": false,
+                "polyfill": false,
+                "regenerator": false
+            }
+        ]
+    ]
+}
