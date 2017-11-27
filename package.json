@@ -1,13 +1,16 @@
 {
   "name": "@y1j2x34/class.js",
   "version": "1.0.3-rc.1",
-  "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy...",
+  "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy, decorate, enum...",
   "main": "index.js",
   "scripts": {
-    "test": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers Chrome",
-    "test_phantomjs": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom --single-run true",
-    "test_dev": "node ./node_modules/karma/bin/karma start --config ./karma.conf.js --browsers PhantomJS_custom",
-    "minify": "node ./node_modules/gulp/bin/gulp minify"
+    "test": "karma start ./karma.conf.js --browsers Chrome",
+    "test_phantomjs": "karma start ./karma.conf.js --browsers PhantomJS_custom --single-run true",
+    "test_phantomjs_es6": "karma start ./karma.conf.es6.js --browsers PhantomJS_custom --single-run true",
+    "test_es6": "karma start ./karma.conf.es6.js --browsers Chrome",
+    "test_dev": "karma start ./karma.conf.js --browsers PhantomJS_custom",
+    "minify": "gulp minify",
+    "build": "rollup -c ./rollup.config.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +23,18 @@
   },
   "homepage": "https://github.com/y1j2x34/Class.js#readme",
   "keywords": [
-    "class", "class.js", "proxy", "decorator", "mixin", "singleton", "inheritance", "extend", "oo", "oop"
+    "class",
+    "class.js",
+    "proxy",
+    "decorator",
+    "decorate",
+    "mixin",
+    "singleton",
+    "inheritance",
+    "extend",
+    "oo",
+    "oop",
+    "enum"
   ],
   "files": [
     "Class.js",
@@ -30,11 +44,11 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^3.0.0",
-    "isparta": "^4.0.0",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",
     "karma": "^1.7.1",
@@ -46,9 +60,15 @@
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
     "karma-phantomjs-launcher": "^1.0.4",
+    "karma-rollup-plugin": "^0.2.4",
+    "karma-rollup-preprocessor": "^5.0.1",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^2.0.5",
     "phantomjs-polyfill-object-assign": "0.0.2",
+    "rollup": "^0.51.8",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-strip": "^1.1.1",
+    "rollup-plugin-uglify": "^2.0.1",
     "webpack": "^3.8.1"
   },
   "dependencies": {},

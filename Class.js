@@ -304,6 +304,9 @@
             statics: {
                 values: function(){
                     return enums;
+                },
+                has: function(name){
+                    return EnumClazz[name] instanceof EnumClass;
                 }
             }
         });
@@ -441,7 +444,7 @@
         }
     }
 
-    /*
+    /**
      * 
      * @param {Decorator|function} decorator 
      * @param {function} fn 

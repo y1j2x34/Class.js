@@ -1,9 +1,13 @@
 {
+    "sourceMaps": false,
     "presets": [
         [
             "env",
             {
-                "browsers": ["last 2 versions", "ie 10"],
+                "targets": {
+                    "browsers": ["Chrome >= 52", "FireFox >= 44", "Safari >= 7", "Explorer 11", "last 4 Edge versions"]
+                },
+                "useBuiltIns": true,
                 "modules": false
             }
         ]
@@ -14,7 +18,7 @@
             {
                 "helpers": false,
                 "polyfill": false,
-                "regenerator": false
+                "regenerator": true
             }
         ]
     ]

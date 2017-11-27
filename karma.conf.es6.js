@@ -1,15 +1,9 @@
 'use strict';
 module.exports = function(config) {
-    var babelOptions = {
-        presets: [
-            [
-                'env',
-                {
-                    browsers: 'last 2 versions'
-                }
-            ]
-        ]
-    };
+    var strip = require('rollup-plugin-strip');
+    var babel = require('rollup-plugin-babel');
+    var stripOptions = require('./rollup-strip.config');
+
     var reporters = ['kjhtml', 'coverage'];
     var coverageReporters = [
         {
@@ -20,14 +14,14 @@ module.exports = function(config) {
         console.log('On Travis sending coveralls');
         coverageReporters.push({
             type: 'lcov',
-            dir: 'coverage'
+            dir: 'coverage.es6'
         });
         reporters.push('coveralls');
     } else {
         console.log('Not on Travis so not sending coveralls');
         coverageReporters.push({
             type: 'html',
-            dir: 'coverage'
+            dir: 'coverage.es6'
         });
     }
     config.set({
@@ -40,40 +34,43 @@ module.exports = function(config) {
         files: [
             './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
             {
-                pattern: 'test/main.js',
+                pattern: 'spec/main.js',
                 watched: true,
                 included: true,
                 served: true
             },
             {
-                pattern: 'Class.js',
+                pattern: 'src/*.js',
                 watched: true,
+                included: false,
+                served: true
+            },
+            {
+                pattern: '**/*.map',
+                watched: false,
                 included: false,
                 served: true
             }
         ],
         preprocessors: {
-            'test/main.js': ['webpack', 'sourcemap', 'coverage']
+            './node_modules/babel-runtime/core-js/**/*.js': ['rollup'],
+            'spec/main.js': ['rollup', 'coverage']
         },
-        webpack: {
-            devtool: 'inline-source-map',
-            module: {
-                rules: [
-                    {
-                        test: /\.js$/,
-                        use: {
-                            loader: 'babel-loader',
-                            options: babelOptions
-                        }
-                    }
-                ]
-            }
+
+        rollupPreprocessor: {
+            watch: true,
+            format: 'iife',
+            sourcemap: true,
+            plugins: [
+                strip(stripOptions),
+                babel()
+            ]
         },
         coverageReporter: {
             reporters: coverageReporters
         },
 
-        reporters: reporters,
+        reporters:  reporters,
 
         port: 9876,
 
@@ -106,10 +103,8 @@ module.exports = function(config) {
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
-            'karma-webpack',
             'karma-coverage',
-            'karma-babel-preprocessor',
-            'karma-sourcemap-loader',
+            'karma-rollup-preprocessor',
             'karma-coveralls'
         ],
 

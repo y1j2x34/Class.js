@@ -364,6 +364,7 @@ var Color = Class.createEnum({
 });
 console.info(Color.RED instanceof Color); // true
 console.info(Color.RED.hex === '#FF0000'); // true
+console.info(Color.RED.name() === 'RED'); // true
 ```
 
 ```js

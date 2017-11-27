@@ -2,7 +2,7 @@ export const Object$defineProperty = Object.defineProperty;
 export const Object$getOwnPropertyNames = Object.getOwnPropertyNames;
 export const Object$create = Object.create;
 export const Object$assign = Object.assign;
-export const Object$setPrototypeOf = Object.setPrototypeOf;
+export const Object$setPrototypeOf = Object.setPrototypeOf || _setPrototypeOf;
 export const constructorFactoryCache = {};
 export const keyfields = { init: true, statics: true, pythonic: true, name: true };
 export const classNameRegex = /^[a-z\$_][\w\$]*$/i;
@@ -16,4 +16,8 @@ export function toArray(args) {
 export function defaultInit() {
     // jshint validthis: true
     this.$super(arguments);
+}
+
+function _setPrototypeOf(dest, supr){
+    dest.__proto__ = supr; // jshint ignore: line
 }
