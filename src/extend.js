@@ -45,9 +45,7 @@ export default function extend(Super, definition) {
     }
 
     var propertyNames = Object$getOwnPropertyNames(definition);
-    propertyNames = propertyNames.filter(function(name) {
-        return !keyfields[name];
-    });
+    propertyNames = propertyNames.filter(name => !keyfields[name]);
 
     var superproto = Super.prototype;
 

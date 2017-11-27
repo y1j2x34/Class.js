@@ -6,4 +6,4 @@ export default function _extendStatics(SubClass, statics, SuperClass) {
     }
     Object$setPrototypeOf(statics, SuperClass);
     Object$setPrototypeOf(SubClass, statics);
-};
+}

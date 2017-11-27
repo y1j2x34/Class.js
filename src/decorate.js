@@ -38,7 +38,7 @@ export default function decorate(object, decorators) {
             if (clazz.$classdef.pythonic) {
                 var _before = constructorDecorator.before;
                 if (isFunction(_before)) {
-                    constructorDecorator.before = _beforeDec;
+                    constructorDecorator.before = _beforeDec(_before);
                 }
             }
             init = _decorate(constructorDecorator, defaultInit, true);
@@ -48,13 +48,15 @@ export default function decorate(object, decorators) {
         DecorateClass.prototype = _decorateObject(Object$create(DecorateClass.prototype), decorators);
         return DecorateClass;
 
-        function _beforeDec() {
-            // jshint validthis: true
-            var newargs = _before.apply(this, slice(arguments, 1));
-            if (newargs) {
-                newargs.unshift(this);
-            }
-            return newargs;
+        function _beforeDec(_before) {
+            return function(){
+                // jshint validthis: true
+                var newargs = _before.apply(this, slice(arguments, 1));
+                if (newargs) {
+                    newargs.unshift(this);
+                }
+                return newargs;
+            };
         }
     }
 
@@ -84,7 +86,7 @@ export default function decorate(object, decorators) {
 }
 
 function _hasConstructorDecorator(decorators) {
-    return isFunction(decorators.constructor) || Object$getOwnPropertyNames(decorators).indexOf('constructor') !== -1;
+    return Object$getOwnPropertyNames(decorators).indexOf('constructor') !== -1;
 }
 
 /**

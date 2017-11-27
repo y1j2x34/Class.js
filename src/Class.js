@@ -1,1 +1,2 @@
-export default function Class(){};
+const Class = function Class(){};
+export default Class;

@@ -2,7 +2,9 @@ import extend from './extend';
 import { slice } from './var';
 
 export function MixinBuilder(superclass) {
-    this.with = () => Array.prototype.reduce.call(arguments, _mixin, superclass);
+    this.with = function() {
+        return Array.prototype.reduce.call(arguments, _mixin, superclass);
+    };
 }
 function _mixin(c, m) {
     var wrapClassM = _wrap(m, m.name + '$' + c.name);
