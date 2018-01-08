@@ -1,8 +1,8 @@
 {
   "name": "@y1j2x34/class.js",
-  "version": "1.0.3-rc.1",
+  "version": "1.0.3-rc.2",
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy, decorate, enum...",
-  "main": "index.js",
+  "main": "dist/Class.min.js",
   "scripts": {
     "test": "karma start ./karma.conf.js --browsers Chrome",
     "test_phantomjs": "karma start ./karma.conf.js --browsers PhantomJS_custom --single-run true",
@@ -37,13 +37,14 @@
     "enum"
   ],
   "files": [
-    "Class.js",
-    "Class.min.js",
-    "samples"
+    "samples",
+    "dist",
+    "src"
   ],
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
+    "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
     "gulp": "^3.9.1",
