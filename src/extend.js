@@ -110,18 +110,20 @@ export default function extend(Super, definition) {
                 args = first;
             }
         }
+        var uber = superproto;
         if (isAssignable(clazz, Array)) {
             self.push.apply(self, args);
+        } else if(!uber){
+            return;
+        } else if(uber.$super){
+            var _super = uber.$super;
+            self.$super = function() {
+                return _super.apply(this, arguments);
+            };
+            uber.clazz.apply(self, args);
+            self.$super = _super;
         } else {
-            var uber = superproto;
-            if (uber && uber.$super) {
-                var _super = uber.$super;
-                self.$super = function() {
-                    return _super.apply(this, arguments);
-                };
-                uber.clazz.apply(self, args);
-                self.$super = _super;
-            }
+            uber.constructor.apply(self, args);
         }
     }
 }
