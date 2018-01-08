@@ -49,7 +49,7 @@ npm run test_phantomjs
 
 ```js
 var Point = Class.create({
-    static: {
+    statics: {
         DIMENSION: 1
     },
     init: function(self, x, y){
