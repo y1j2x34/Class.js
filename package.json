@@ -1,6 +1,6 @@
 {
   "name": "@y1j2x34/class.js",
-  "version": "1.0.3-rc.2",
+  "version": "1.0.3-rc.3",
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy, decorate, enum...",
   "main": "dist/Class.min.js",
   "scripts": {
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "git+https://github.com/y1j2x34/Class.js.git"
   },
-  "author": "'y1j2x34' <y1j2x34@qq.com> (http://www.vgerbot.com/)",
+  "author": "'y1j2x34' <y1j2x34@qq.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/y1j2x34/Class.js/issues"
