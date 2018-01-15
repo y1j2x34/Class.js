@@ -131,3 +131,23 @@ var SubClass = Class.extend(SuperClass, {
 new SubClass(input);
 console.info(input === output);
 })();
+
+
+(function(){
+
+    function MyClass(arg){
+        console.info(this, arg);
+    }
+    MyClass.prototype.hello = function(who){
+        console.info('hello', who);
+        return this;
+    };
+    var ExtMyClass = Class.extend(MyClass, {
+        init: function(self, who){
+            this.hello(who);
+        }
+    });
+    var Cls = Class.mix(MyClass).with(Class.create({world: console.log}));
+    new Cls().hello('hello').world(new Cls());
+    new ExtMyClass('world'); // hello world
+})();

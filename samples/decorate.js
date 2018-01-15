@@ -61,3 +61,12 @@ console.info(ret);
 console.info('==============');
 
 airplane.landing();
+
+var Color = Class.createEnum(['Red'], {name: 'Color'});
+console.info(Color.values());
+console.info(Color.Red instanceof Color);
+
+Class.createEnum({
+    Red: [],
+    Yellow: []
+});

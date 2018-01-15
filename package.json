@@ -4,12 +4,9 @@
   "description": "Simple class system for low level javascript which includes inheritance, mixins, inherited statics, python style, proxy, decorate, enum...",
   "main": "dist/Class.min.js",
   "scripts": {
+    "test:phantomjs": "karma start ./karma.conf.js --browsers PhantomJS_custom --single-run true",
     "test": "karma start ./karma.conf.js --browsers Chrome",
-    "test_phantomjs": "karma start ./karma.conf.js --browsers PhantomJS_custom --single-run true",
-    "test_phantomjs_es6": "karma start ./karma.conf.es6.js --browsers PhantomJS_custom --single-run true",
-    "test_es6": "karma start ./karma.conf.es6.js --browsers Chrome",
     "test_dev": "karma start ./karma.conf.js --browsers PhantomJS_custom",
-    "minify": "gulp minify",
     "build": "rollup -c ./rollup.config.js"
   },
   "repository": {
@@ -43,20 +40,15 @@
   ],
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
-    "gulp": "^3.9.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^3.0.0",
     "jasmine": "^2.8.0",
     "jasmine-core": "^2.8.0",
     "karma": "^1.7.1",
     "karma-babel-preprocessor": "^7.0.0",
-    "karma-browserify": "^5.1.1",
     "karma-chrome-launcher": "^2.2.0",
-    "karma-coverage": "^1.1.1",
+    "karma-coverage-istanbul-reporter": "^1.3.3",
     "karma-coveralls": "^1.1.2",
     "karma-jasmine": "^1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
@@ -64,13 +56,12 @@
     "karma-rollup-plugin": "^0.2.4",
     "karma-rollup-preprocessor": "^5.0.1",
     "karma-sourcemap-loader": "^0.3.7",
-    "karma-webpack": "^2.0.5",
     "phantomjs-polyfill-object-assign": "0.0.2",
     "rollup": "^0.51.8",
     "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-istanbul": "^2.0.0",
     "rollup-plugin-strip": "^1.1.1",
-    "rollup-plugin-uglify": "^2.0.1",
-    "webpack": "^3.8.1"
+    "rollup-plugin-uglify": "^2.0.1"
   },
   "dependencies": {},
   "directories": {

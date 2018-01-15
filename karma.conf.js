@@ -1,16 +1,12 @@
 'use strict';
 module.exports = function(config) {
-    var babelOptions = {
-        presets: [
-            [
-                'env',
-                {
-                    browsers: 'last 2 versions'
-                }
-            ]
-        ]
-    };
-    var reporters = ['kjhtml', 'coverage'];
+    var path = require('path');
+    var strip = require('rollup-plugin-strip');
+    var babel = require('rollup-plugin-babel');
+    var istanbule = require('rollup-plugin-istanbul');
+    var stripOptions = require('./rollup-strip.config');
+
+    var reporters = ['kjhtml', 'coverage-istanbul'];
     var coverageReporters = [
         {
             type: 'text-summary'
@@ -40,40 +36,58 @@ module.exports = function(config) {
         files: [
             './node_modules/phantomjs-polyfill-object-assign/object-assign-polyfill.js',
             {
-                pattern: 'test/main.js',
+                pattern: 'spec/main.js',
                 watched: true,
                 included: true,
                 served: true
             },
             {
-                pattern: 'Class.js',
+                pattern: 'src/*.js',
                 watched: true,
+                included: false,
+                served: true
+            },
+            {
+                pattern: '**/*.map',
+                watched: false,
                 included: false,
                 served: true
             }
         ],
         preprocessors: {
-            'test/main.js': ['webpack', 'sourcemap', 'coverage']
-        },
-        webpack: {
-            devtool: 'inline-source-map',
-            module: {
-                rules: [
-                    {
-                        test: /\.js$/,
-                        use: {
-                            loader: 'babel-loader',
-                            options: babelOptions
-                        }
-                    }
-                ]
-            }
-        },
-        coverageReporter: {
-            reporters: coverageReporters
+            './node_modules/babel-runtime/core-js/**/*.js': ['rollup'],
+            'spec/main.js': ['rollup']
         },
 
-        reporters: reporters,
+        rollupPreprocessor: {
+            watch: true,
+            format: 'iife',
+            sourcemap: true,
+            plugins: [
+                // strip(stripOptions),
+                istanbule({
+                    exclude: 'spec/**/*.js'
+                }),
+                babel()
+            ]
+        },
+
+        reporters:  reporters,
+
+        coverageIstanbulReporter: {
+            reports: ['html', 'text-summary'],
+
+            dir: path.join(__dirname, 'coverage'),
+
+            fixWebpackSourcePaths: true,
+
+            skipFilesWithNoCoverage: true,
+            'report-config': {
+                html: {
+                    subdir: 'html'
+                }
+            }
+        },
 
         port: 9876,
 
@@ -106,11 +120,9 @@ module.exports = function(config) {
             'karma-phantomjs-launcher',
             'karma-jasmine',
             'karma-jasmine-html-reporter',
-            'karma-webpack',
-            'karma-coverage',
-            'karma-babel-preprocessor',
-            'karma-sourcemap-loader',
-            'karma-coveralls'
+            'karma-rollup-preprocessor',
+            'karma-coveralls',
+            'karma-coverage-istanbul-reporter'
         ],
 
         singleRun: false,
