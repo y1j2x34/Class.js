@@ -1,30 +1,46 @@
 'use strict';
 module.exports = function(config) {
     var path = require('path');
-    var strip = require('rollup-plugin-strip');
     var babel = require('rollup-plugin-babel');
     var istanbule = require('rollup-plugin-istanbul');
-    var stripOptions = require('./rollup-strip.config');
 
-    var reporters = ['kjhtml', 'coverage-istanbul'];
-    var coverageReporters = [
-        {
-            type: 'text-summary'
-        }
+    var rollupPlugins =  [
+        babel()
     ];
+
+    var reporters = ['kjhtml'];
+
+    var coverageIstanbulReporter = {
+        reports: ['html', 'text-summary'],
+
+        dir: path.join(__dirname, 'coverage'),
+
+        fixWebpackSourcePaths: true,
+
+        skipFilesWithNoCoverage: true,
+        'report-config': {
+            html: {
+                subdir: 'html'
+            }
+        }
+    };
+
+    var coverageReporters = [{
+        type: 'text-summary'
+    }, {
+        type: 'lcov',
+        dir: 'coverage'
+    }];
+
     if (process.env.TRAVIS) {
         console.log('On Travis sending coveralls');
-        coverageReporters.push({
-            type: 'lcov',
-            dir: 'coverage'
-        });
-        reporters.push('coveralls');
+        reporters.push('coverage','coveralls');
     } else {
         console.log('Not on Travis so not sending coveralls');
-        coverageReporters.push({
-            type: 'html',
-            dir: 'coverage'
-        });
+        rollupPlugins.unshift(istanbule({
+            exclude: 'spec/**/*.js'
+        }));
+        reporters.push('coverage-istanbul');
     }
     config.set({
         basePath: '',
@@ -63,30 +79,15 @@ module.exports = function(config) {
             watch: true,
             format: 'iife',
             sourcemap: true,
-            plugins: [
-                // strip(stripOptions),
-                istanbule({
-                    exclude: 'spec/**/*.js'
-                }),
-                babel()
-            ]
+            plugins:rollupPlugins
         },
 
         reporters:  reporters,
 
-        coverageIstanbulReporter: {
-            reports: ['html', 'text-summary'],
+        coverageIstanbulReporter: coverageIstanbulReporter,
 
-            dir: path.join(__dirname, 'coverage'),
-
-            fixWebpackSourcePaths: true,
-
-            skipFilesWithNoCoverage: true,
-            'report-config': {
-                html: {
-                    subdir: 'html'
-                }
-            }
+        coverageReporter: {
+            reporters: coverageReporters
         },
 
         port: 9876,
@@ -122,6 +123,7 @@ module.exports = function(config) {
             'karma-jasmine-html-reporter',
             'karma-rollup-preprocessor',
             'karma-coveralls',
+            'karma-coverage',
             'karma-coverage-istanbul-reporter'
         ],
 
