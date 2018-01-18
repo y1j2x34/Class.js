@@ -32,9 +32,12 @@ module.exports = function(config) {
         dir: 'coverage'
     }];
 
+    var preProcessors = ['rollup'];
+
     if (process.env.TRAVIS) {
         console.log('On Travis sending coveralls');
         reporters.push('coverage','coveralls');
+        preProcessors.push('coverage');
     } else {
         console.log('Not on Travis so not sending coveralls');
         rollupPlugins.unshift(istanbule({
@@ -72,7 +75,7 @@ module.exports = function(config) {
         ],
         preprocessors: {
             './node_modules/babel-runtime/core-js/**/*.js': ['rollup'],
-            'spec/main.js': ['rollup']
+            'spec/main.js': preProcessors
         },
 
         rollupPreprocessor: {
