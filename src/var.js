@@ -4,7 +4,7 @@ export const Object$create = Object.create;
 export const Object$assign = Object.assign;
 export const Object$setPrototypeOf = Object.setPrototypeOf || _setPrototypeOf;
 export const Object$getOwnPropertyDescriptor = Object.getOwnPropertyDescriptor;
-export const Object$getOwnPropertySymbols = Object.getOwnPropertySymbols;
+export const Object$getOwnPropertySymbols = Object.getOwnPropertySymbols || (() => []);
 export const constructorFactoryCache = {};
 export const keyfields = { init: true, statics: true, pythonic: true, name: true };
 export const classNameRegex = /^[a-z\$_][\w\$]*$/i;
