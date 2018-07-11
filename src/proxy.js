@@ -32,10 +32,10 @@ function _proxyClass(clazz, handler) {
     });
 }
 function _proxyObject(object, handler) {
-    var proxyobject = Object$create(object);
+    const proxyobject = Object$create(object);
 
     return members(object).reduce(function(proxyobject, name) {
-        var member = object[name];
+        const member = object[name];
         if (isFunction(member)) {
             proxyobject[name] = _proxy(member);
         }

@@ -7,11 +7,11 @@ export function MixinBuilder(superclass) {
     };
 }
 function _mixin(c, m) {
-    var wrapClassM = _wrap(m, m.name + '$' + c.name);
+    const wrapClassM = _wrap(m, m.name + '$' + c.name);
     return extend(c, wrapClassM.$classdef);
 }
 function _wrap(superclass, name) {
-    var pythonic = superclass.$classdef.pythonic;
+    const pythonic = superclass.$classdef.pythonic;
     return extend(superclass, {
         name: name,
         pythonic: pythonic,

@@ -30,20 +30,20 @@ export default function decorate(object, decorators) {
         delete decorators.uber;
         delete decorators.$callSuper;
 
-        var init;
+        let init;
         if (_hasConstructorDecorator(decorators)) {
-            var constructorDecorator = decorators.constructor;
+            const constructorDecorator = decorators.constructor;
             delete decorators.constructor;
             delete constructorDecorator.returns;
             if (clazz.$classdef.pythonic) {
-                var _before = constructorDecorator.before;
+                const _before = constructorDecorator.before;
                 if (isFunction(_before)) {
                     constructorDecorator.before = _beforeDec(_before);
                 }
             }
             init = _decorate(constructorDecorator, defaultInit, true);
         }
-        var DecorateClass = Class.extend(clazz, { init: init });
+        const DecorateClass = Class.extend(clazz, { init: init });
 
         DecorateClass.prototype = _decorateObject(Object$create(DecorateClass.prototype), decorators);
         return DecorateClass;
@@ -51,7 +51,7 @@ export default function decorate(object, decorators) {
         function _beforeDec(_before) {
             return function(){
                 // jshint validthis: true
-                var newargs = _before.apply(this, slice(arguments, 1));
+                const newargs = _before.apply(this, slice(arguments, 1));
                 if (newargs) {
                     newargs.unshift(this);
                 }
@@ -61,13 +61,13 @@ export default function decorate(object, decorators) {
     }
 
     function _decorateObject(object, decorators) {
-        var defaultDecorator = decorators['*'];
+        const defaultDecorator = decorators['*'];
 
         delete decorators['*'];
 
-        for (var key in decorators) {
-            var decorator = decorators[key];
-            var fn = object[key];
+        for (const key in decorators) {
+            const decorator = decorators[key];
+            const fn = object[key];
             if (!isFunction(fn)) {
                 throw new Error('You must decorate on a function');
             }
@@ -102,13 +102,13 @@ function _decorate(decorator, fn, isConstructor) {
             return decorator.call(this, fn, arguments);
         };
     } else {
-        var before = decorator.before || _arguments;
-        var after = decorator.after || noop;
-        var thrown = decorator.thrown || _thrown;
-        var returns = decorator.returns || identity;
+        const before = decorator.before || _arguments;
+        const after = decorator.after || noop;
+        const thrown = decorator.thrown || _thrown;
+        const returns = decorator.returns || identity;
         return function() {
-            var returnvalue;
-            var newarguments = before.apply(this, arguments) || arguments;
+            let returnvalue;
+            const newarguments = before.apply(this, arguments) || arguments;
 
             try {
                 returnvalue = fn.apply(this, newarguments);

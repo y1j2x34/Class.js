@@ -3,5 +3,6 @@
     "eqeqeq": true,
     "eqnull": true,
     "undef": true,
-    "unused": true
+    "unused": true,
+    "varstmt": true
 }

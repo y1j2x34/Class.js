@@ -1,7 +1,7 @@
 import { and } from "./match";
 
 export default function members(object) {
-    var map = {};
+    const map = {};
     return _membersImpl(object).filter(and(notexist, not$super));
 
     function notexist(name) {

@@ -1,7 +1,13 @@
-import { isArray, isObject, isArgument } from "./match";
+import {
+    isArray,
+    isObject,
+    isArgument
+} from "./match";
 import Class from "./Class";
 import defineConstant from "./defineConstant";
-import { Enum } from "./Enum";
+import {
+    Enum
+} from "./Enum";
 
 /**
  *
@@ -10,32 +16,39 @@ import { Enum } from "./Enum";
  */
 export default function createEnum(names, definition) {
     if (isArray(names)) {
-        names = names.reduce(function(obj, name) {
+        names = names.reduce(function (obj, name) {
             obj[name] = [];
             return obj;
         }, {});
     } else if (!isObject(names)) {
         throw new Error('illegal enum names : ' + names);
     }
-    var enums = [];
-    var EnumClazz = Enum.extend(definition).extend({
-        name: definition ? definition.name : undefined,
+    const enums = [];
+    const EnumClazz = Enum.extend(definition).extend({
+        props: {
+            name: definition ? definition.name : undefined
+        },
         statics: {
-            values: function() {
+            values: function () {
                 return enums;
             },
-            has: function(name) {
+            has: function (name) {
                 return EnumClazz[name] instanceof Enum;
             }
         }
     });
 
-    for (var name in names) {
-        var args = names[name];
+    for (const name in names) {
+        const args = names[name];
         if (!isArgument(args) && !isArray(args)) {
             throw new Error('invalid enum argument type, name:' + name + ', args: ' + args);
         }
-        var enumInstance = Class.singleton(EnumClazz, { _name: name, name: name }, args);
+        const enumInstance = Class.singleton(EnumClazz, {
+            props: {
+                _name: name,
+                name: name
+            }
+        }, args);
         enumInstance.name = enum$name;
         enumInstance.toString = enum$name;
         defineConstant(EnumClazz, name, enumInstance);
@@ -44,6 +57,7 @@ export default function createEnum(names, definition) {
 
     return EnumClazz;
 }
+
 function enum$name() {
-    return this._name;  // jshint ignore: line
+    return this._name; // jshint ignore: line
 }

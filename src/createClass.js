@@ -9,7 +9,7 @@ import Class from "./Class";
  * @param {ClassDefinition} definition
  */
 export default function createClass(name, definition) {
-    var args = arguments;
+    const args = arguments;
     switch (args.length) {
         case 0:
             throw new Error('Illegal arguments');
@@ -26,7 +26,7 @@ export default function createClass(name, definition) {
             }
     }
     if (definition) {
-        var clsName = definition.name;
+        const clsName = definition.name;
         if (!classNameRegex.test(clsName)) {
             throw new Error('Invalid class name: ' + clsName);
         }

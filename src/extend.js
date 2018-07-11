@@ -1,5 +1,5 @@
 import { isFunction, isArgument, not } from "./match";
-import { Object$getOwnPropertyNames, slice, toArray, Object$create, keyfields, defaultInit } from "./var";
+import { Object$getOwnPropertyNames, slice, toArray, Object$create, keyfields, defaultInit, Object$getOwnPropertyDescriptor, Object$getOwnPropertySymbols, Object$defineProperty } from "./var";
 import { defaultConfiguration } from "./configure";
 import defineConstants from "./defineConstants";
 import isAssignable from "./isAssignable";
@@ -30,12 +30,14 @@ export default function extend(Super, definition) {
     if (!definition) {
         definition = {};
     }
-    var init = definition.init;
-    var statics = definition.statics;
-    var isPythonicOn = (definition.pythonic =
+    let init = definition.init;
+    const statics = definition.statics;
+    const methods = definition.methods || {};
+    const props = definition.props || {};
+    const isPythonicOn = (definition.pythonic =
         typeof definition.pythonic === 'boolean' ? definition.pythonic : defaultConfiguration.pythonic);
 
-    var className = definition.name || 'Class$' + classCount.toString(16);
+    const className = definition.name || 'Class$' + classCount.toString(16);
 
     if (!isFunction(init)) {
         init = defaultInit;
@@ -44,13 +46,10 @@ export default function extend(Super, definition) {
         init = _pythonic(init);
     }
 
-    var propertyNames = Object$getOwnPropertyNames(definition);
-    propertyNames = propertyNames.filter(name => !keyfields[name]);
+    const superproto = Super.prototype;
 
-    var superproto = Super.prototype;
-
-    var clazz = createConstructor(className, init);
-    var clazzproto = (clazz.prototype = Object$create(superproto));
+    const clazz = createConstructor(className, init);
+    const clazzproto = (clazz.prototype = Object$create(superproto));
 
     defineConstants(clazzproto, {
         constructor: clazz,
@@ -68,26 +67,38 @@ export default function extend(Super, definition) {
     clazzproto.$super = $super;
 
     _extendStatics(clazz, statics, Super);
+    
+    const propertyNames = Object$getOwnPropertyNames(props).concat(Object$getOwnPropertySymbols(props));
+    copyDescriptors(props, clazzproto, propertyNames);
 
-    if (isPythonicOn) {
-        propertyNames.filter(_isFunction).forEach(function(name) {
-            clazzproto[name] = _pythonic(definition[name]);
+    
+    const methodNames = Object$getOwnPropertyNames(methods).concat(Object$getOwnPropertySymbols(methods));
+    if(isPythonicOn) {
+        methodNames.forEach(name => {
+            const method = _pythonic(methods[name]);
+            const descriptor = Object$getOwnPropertyDescriptor(methods, name);
+            if(descriptor.get) {
+                descriptor.get = function(){
+                    return method;
+                };
+            } else {
+                descriptor.value = method;
+            }
+            Object$defineProperty(clazzproto, name, descriptor);
         });
-        propertyNames = propertyNames.filter(not(_isFunction));
+    } else {
+        copyDescriptors(methods, clazzproto, methodNames);
     }
-    copyDescriptors(definition, clazzproto, propertyNames);
+
     classCount++;
     return clazz;
 
-    function _isFunction(name) {
-        return isFunction(definition[name]);
-    }
     function $callSuper(name) {
-        var fn = superproto[name];
+        const fn = superproto[name];
         if (!isFunction(fn)) {
             throw new Error();
         }
-        var args = arguments[1];
+        let args = arguments[1];
         if (!isArgument(args)) {
             args = slice(arguments, 1);
         }
@@ -101,8 +112,8 @@ export default function extend(Super, definition) {
         return fn.apply(this, args);
     }
     function $super(first) {
-        var self = this;
-        var args = arguments;
+        const self = this;
+        let args = arguments;
         if (isArgument(first)) {
             if (isPythonicOn) {
                 args = slice(first, 1);
@@ -110,13 +121,13 @@ export default function extend(Super, definition) {
                 args = first;
             }
         }
-        var uber = superproto;
+        const uber = superproto;
         if (isAssignable(clazz, Array)) {
             self.push.apply(self, args);
         } else if(!uber){
             return;
         } else if(uber.$super){
-            var _super = uber.$super;
+            const _super = uber.$super;
             self.$super = function() {
                 return _super.apply(this, arguments);
             };

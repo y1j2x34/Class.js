@@ -10,7 +10,7 @@ import newInstance from "./newInstance";
  * @param {Arguments|any[]} args
  */
 export default function singleton(nameOrSuperclass, definition, args) {
-    var Cls;
+    let Cls;
     switch (arguments.length) {
         case 0:
             throw new Error('Illegal arguments');
