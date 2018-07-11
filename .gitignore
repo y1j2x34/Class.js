@@ -1,1 +1,4 @@
 /node_modules
+/serve
+/temp
+/coverage
