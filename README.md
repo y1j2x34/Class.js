@@ -56,8 +56,10 @@ var Point = Class.create({
         self.x = x;
         self.y = y;
     },
-    clone: function(self){
-        return new self.clazz(self.x, self.y);
+    methods: {
+        clone: function(self){
+            return new self.clazz(self.x, self.y);
+        }
     }
 });
 ```
@@ -72,8 +74,10 @@ var Animal = Class.create({
     init: function(self){
         console.info('new animal');
     },
-    run: function(){
-        console.info('animal running');
+    methods: {
+        run: function(){
+            console.info('animal running');
+        }
     }
 });
 var Dog = Class.extend(Animal, {
@@ -81,10 +85,12 @@ var Dog = Class.extend(Animal, {
         self.$super(arguments);
         console.info('new dog');
     },
-    run: function(self){
-        self.$callSuper('run');
-        console.info('dog running');
-        console.info('self.superclass === Animal', self.superclass === Animal);
+    methods: {
+        run: function(self){
+            self.$callSuper('run');
+            console.info('dog running');
+            console.info('self.superclass === Animal', self.superclass === Animal);
+        }
     }
 });
 // or 
@@ -113,8 +119,10 @@ var Animal = Class.create('Animal', {
         self.$super(arguments);
         console.info('create animal');
     },
-    bite: function(){
-        console.info('animal bite');
+    methods: {
+        bite: function(){
+            console.info('animal bite');
+        }
     }
 });
 
@@ -124,8 +132,10 @@ var Mammal = Class.extend(Animal, {
         self.$super(arguments);
         console.info('create mammal');
     },
-    bite: function(){
-        console.info('mammal bite');
+    methods: {
+        bite: function(){
+            console.info('mammal bite');
+        }
     }
 });
 
@@ -135,11 +145,13 @@ var Flyable = Class.extend(Animal, {
         self.$super(arguments);
         console.info('create flyable');
     },
-    fly: function(){
-        console.info('flyable flying');
-    },
-    landing: function(){
-        console.info('flyable landing');
+    methods: {
+        fly: function(){
+            console.info('flyable flying');
+        },
+        landing: function(){
+            console.info('flyable landing');
+        }
     }
 });
 
@@ -149,14 +161,16 @@ var Bird = Class.extend(Flyable, {
         self.$super(arguments);
         console.info('create bird');
     },
-    bite: function() {
-        console.info("bird can't bite");
-    },
-    fly: function() {
-        console.info('bird fly');
-    },
-    eat: function(){
-        console.info('bird like to eat worms');
+    methods: {
+        bite: function() {
+            console.info("bird can't bite");
+        },
+        fly: function() {
+            console.info('bird fly');
+        },
+        eat: function(){
+            console.info('bird like to eat worms');
+        }
     }
 });
 
@@ -167,11 +181,13 @@ var Puppy = Class.extend(Flyable, {
         this.$super(arguments);
         console.info('create puppy');
     },
-    eat: function(){
-        console.info('puppy eat');
-    },
-    smile: function(){
-        console.info('smilling puppy');
+    methods: {
+        eat: function(){
+            console.info('puppy eat');
+        },
+        smile: function(){
+            console.info('smilling puppy');
+        }
     }
 });
 
@@ -182,8 +198,10 @@ var flyingPuppy = Class.singleton(Class.mix(Mammal).with(Bird, Puppy), {
         self.$super(arguments);
         console.info('create FlyingPuppy');
     },
-    fly: function() {
-        console.info('I can fly to anywhere on the earth');
+    methods: {
+        fly: function() {
+            console.info('I can fly to anywhere on the earth');
+        }
     }
 });
 // output:
@@ -208,9 +226,11 @@ flyingPuppy.smile();// smilling puppy
 
 ```js
 var Cat = Class.create({
-    meow: function(){
-        console.info('meow~~~');
-        return 'meow';
+    methods: {
+        meow: function(){
+            console.info('meow~~~');
+            return 'meow';
+        }
     }
 });
 
@@ -252,11 +272,13 @@ var Airplane = Class.create('Airplane', {
     init: function(){
         console.info('new airplane');
     },
-    fly: function(self, where) {
-        console.info('fly above the ' + where);
-    },
-    landing: function() {
-        console.info('landing');
+    methods: {
+        fly: function(self, where) {
+            console.info('fly above the ' + where);
+        },
+        landing: function() {
+            console.info('landing');
+        }
     }
 });
 ```
