@@ -1,10 +1,8 @@
 'use strict';
 module.exports = function(config) {
     var path = require('path');
-    var strip = require('rollup-plugin-strip');
     var babel = require('rollup-plugin-babel');
     var istanbule = require('rollup-plugin-istanbul');
-    var stripOptions = require('./rollup-strip.config');
 
     var reporters = ['kjhtml', 'coverage-istanbul'];
     var coverageReporters = [
@@ -42,6 +40,12 @@ module.exports = function(config) {
                 served: true
             },
             {
+                pattern: 'spec/*.js',
+                watched: true,
+                included: false,
+                served: false
+            },
+            {
                 pattern: 'src/*.js',
                 watched: true,
                 included: false,
@@ -60,9 +64,11 @@ module.exports = function(config) {
         },
 
         rollupPreprocessor: {
-            watch: true,
+            watch: {
+                include: ['spec/**/*.js', 'src/**/*.js']
+            },
             format: 'iife',
-            sourcemap: true,
+            sourcemap: 'inline',
             plugins: [
                 // strip(stripOptions),
                 istanbule({

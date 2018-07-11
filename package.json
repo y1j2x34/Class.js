@@ -7,7 +7,8 @@
     "test:phantomjs": "karma start ./karma.conf.js --browsers PhantomJS_custom --single-run true",
     "test": "karma start ./karma.conf.js --browsers Chrome",
     "test_dev": "karma start ./karma.conf.js --browsers PhantomJS_custom",
-    "build": "rollup -c ./rollup.config.js"
+    "build": "rollup -c ./rollup.config.js",
+    "dev": "rollup -c rollup.config.dev.js --watch"
   },
   "repository": {
     "type": "git",
@@ -59,6 +60,9 @@
     "phantomjs-polyfill-object-assign": "0.0.2",
     "rollup": "^0.51.8",
     "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-browsersync": "^0.2.6",
+    "rollup-plugin-copy": "^0.2.3",
+    "rollup-plugin-fill-html": "^1.1.0",
     "rollup-plugin-istanbul": "^2.0.0",
     "rollup-plugin-strip": "^1.1.1",
     "rollup-plugin-uglify": "^2.0.1"
