@@ -6,7 +6,7 @@ describe('create class', () => {
             Class.create();
         }).toThrow();
 
-        var Cls = Class.create({});
+        const Cls = Class.create({});
         expect(Cls).toBeDefined();
         expect(typeof Cls).toBe('function');
     });
@@ -14,11 +14,11 @@ describe('create class', () => {
         expect(function(){
             Class.singleton();
         }).toThrow();
-        var instance = Class.singleton({});
+        const instance = Class.singleton({});
         expect(instance).toBeDefined();
         expect(typeof instance).toBe('object');
         
-        var Cls = Class.create({});
+        const Cls = Class.create({});
         expect(Class.singleton(Cls,{}) instanceof Cls).toBeTruthy();
     });
     it('test class name declaring', () => {
@@ -53,8 +53,8 @@ describe('create class', () => {
         }).not.toThrow();
     });
     it('test static properties', () => {
-        var STATIC_VALUE = {};
-        var Cls = Class.create({
+        const STATIC_VALUE = {};
+        const Cls = Class.create({
             statics: {
                 value: STATIC_VALUE
             }
@@ -62,9 +62,9 @@ describe('create class', () => {
         expect(Cls.value).toBe(STATIC_VALUE);
     });
     it('test constructor called', () => {
-        var value = 0;
-        var modifyTo = {};
-        var Cls = Class.create({
+        let value = 0;
+        const modifyTo = {};
+        const Cls = Class.create({
             init: function() {
                 value = modifyTo;
             }
@@ -84,16 +84,18 @@ describe('pythonic style', () => {
 
     it('test pythonic method', () => {
         new (Class.create({
-            assert: function(self) {
-                expect(self).toBe(this);
+            methods:{
+                assert: function(self) {
+                    expect(self).toBe(this);
+                }
             }
         }))().assert();
     });
 
     it('test pythonic constructor', () => {
-        var expectedValue = {};
-        var expectedPropValue = {};
-        var instance = new (Class.create({
+        const expectedValue = {};
+        const expectedPropValue = {};
+        const instance = new (Class.create({
             init: function(self, value) {
                 expect(value).toBe(expectedValue);
                 self.value = expectedPropValue;
@@ -102,10 +104,12 @@ describe('pythonic style', () => {
         expect(instance.value).toBe(expectedPropValue);
     });
     it('test pythonic method', () => {
-        var expectedValue = {};
+        const expectedValue = {};
         new (Class.create({
-            assert: function(self, value) {
-                expect(value).toBe(expectedValue);
+            methods: {
+                assert: function(self, value) {
+                    expect(value).toBe(expectedValue);
+                }
             }
         }))().assert(expectedValue);
     });
@@ -113,10 +117,10 @@ describe('pythonic style', () => {
 
 describe('normal style', () => {
     it('test normal contrustor', () => {
-        var expectedValue = {};
-        var expectedPropValue = {};
+        const expectedValue = {};
+        const expectedPropValue = {};
 
-        var Cls = Class.create({
+        const Cls = Class.create({
             pythonic: false,
             init: function(value) {
                 expect(value).not.toBe(this);
@@ -124,18 +128,20 @@ describe('normal style', () => {
                 this.value = expectedPropValue;
             }
         });
-        var instance = new Cls(expectedValue);
+        const instance = new Cls(expectedValue);
 
         expect(instance.value).toBe(expectedPropValue);
     });
 
     it('test normal method', () => {
-        var expectedValue = {};
-        var Cls = Class.create({
+        const expectedValue = {};
+        const Cls = Class.create({
             pythonic: false,
-            assert: function(value) {
-                expect(value).not.toBe(this);
-                expect(value).toBe(expectedValue);
+            methods: {
+                assert: function(value) {
+                    expect(value).not.toBe(this);
+                    expect(value).toBe(expectedValue);
+                }
             }
         });
         new Cls().assert(expectedValue);

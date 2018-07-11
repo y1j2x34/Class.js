@@ -20,7 +20,7 @@ describe('test inheritance', () => {
         }).not.toThrow();
     });
     it('test call parent constructor', () => {
-        var beCalled = false;
+        let beCalled = false;
         const SuperClass = Class.create({
             init: function() {
                 beCalled = true;
@@ -36,8 +36,8 @@ describe('test inheritance', () => {
         expect(beCalled).toBeTruthy();
     });
     it('test parent constructor argument', () => {
-        var input = {};
-        var output;
+        const input = {};
+        let output;
         const SuperClass = Class.create({
             init: function(self, arg) {
                 output = arg;
@@ -54,18 +54,22 @@ describe('test inheritance', () => {
         expect(output).toBe(input);
     });
     it('test call parent method', () => {
-        var beCalled = false;
+        let beCalled = false;
         const SuperClass = Class.create({
-            method: function() {
-                beCalled = true;
+            methods: {
+                method: function() {
+                    beCalled = true;
+                }
             }
         });
         const SubClass = Class.extend(SuperClass, {
-            method: function(self) {
-                self.$callSuper('method');
-            },
-            callNotExitMethod: function(self){
-                self.$callSuper('xxxadsdsad');
+            methods: {
+                method: function(self) {
+                    self.$callSuper('method');
+                },
+                callNotExitMethod: function(self){
+                    self.$callSuper('xxxadsdsad');
+                }
             }
         });
         expect(beCalled).toBeFalsy();
@@ -117,8 +121,8 @@ describe('test inheritance', () => {
         expect(Sub.isAssignableFrom(Parent)).toBeTruthy();
     });
     it('test inheritance to Array', () => {
-        var MyArray = Class.extend(Array);
-        var arr = new MyArray(1,2,3,4,5,6);
+        const MyArray = Class.extend(Array);
+        const arr = new MyArray(1,2,3,4,5,6);
         expect(arr.length).toBe(6);
     });
 });

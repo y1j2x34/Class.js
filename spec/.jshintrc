@@ -3,5 +3,6 @@
     "jasmine": true,
     "unused": true,
     "undef": true,
-    "node": true
+    "node": true,
+    "varstmt": true
 }

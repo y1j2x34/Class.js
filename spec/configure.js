@@ -25,11 +25,13 @@ describe('test configure', () => {
     });
     it('first argument of method should not be this', () => {
         const def = {
-            fly: function(first){
-                expect(first).not.toBe(this);
+            methods: {
+                fly: function(first){
+                    expect(first).not.toBe(this);
+                }
             }
         };
-        const initSpy = spyOn(def, 'fly');
+        const initSpy = spyOn(def.methods, 'fly');
         const Klass = createClass(def);
         new Klass().fly();
         expect(initSpy).toHaveBeenCalled();

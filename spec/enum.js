@@ -34,36 +34,37 @@ describe('test Class.createEnum', () => {
         }).not.toThrow();
     });
     it('enum should be instance of enum class', () => {
-        var Color = createEnum(['Red']);
+        const Color = createEnum(['Red']);
         expect(Color.Red instanceof Color).toBeTruthy();
-        var Status = createEnum({
+        const Status = createEnum({
             Init: []
         });
         expect(Status.Init instanceof Status).toBeTruthy();
     });
     it('values() ', () => {
-        var enumNames = ['RED','BLUE', 'PURPLE', 'GREEN'];
-        var Color = createEnum(enumNames);
+        const enumNames = ['RED','BLUE', 'PURPLE', 'GREEN'];
+        const Color = createEnum(enumNames);
         expect(Color.values().length).toBe(enumNames.length);
         expect(enumNames.reduce((flag, name) => flag && Color[name], true)).toBeTruthy();
     });
     it('with arguments', () => {
-        var VALUE = {};
-        var enumNames = {
+        const VALUE = {};
+        const enumNames = {
             S: [VALUE]
         };
-        var def = {
+        const def = {
             init: function(self, value){
                 expect(value).toBe(VALUE);
             }
         };
-        var initSpy = spyOn(def, 'init');
+        const initSpy = spyOn(def, 'init');
         createEnum(enumNames, def);
         expect(initSpy).toHaveBeenCalled();
     });
     it('enum name', () => {
-        var enumNames = ['RED'];
-        var RED = createEnum(enumNames).RED;
+        const enumNames = ['RED'];
+        const RED = createEnum(enumNames).RED;
+        console.info(RED);
         expect(RED.name()).toBe(enumNames[0]);
         expect(RED.name()).toBe(RED.toString());
     });

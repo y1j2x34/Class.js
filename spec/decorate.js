@@ -1,16 +1,20 @@
 import Class from '../src/index';
 
 describe('test decorate', () => {
-    var Airplane;
+    let Airplane;
 
     beforeEach(() => {
         Airplane = Class.create('Airplane', {
-            color: 'white',
-            fly: function(self, where) {
-                console.info('fly above the ' + where);
+            props: {
+                color: 'white'
             },
-            landing: function() {
-                console.info('landing');
+            methods: {
+                fly: function(self, where) {
+                    console.info('fly above the ' + where);
+                },
+                landing: function() {
+                    console.info('landing');
+                }
             }
         });
     });
@@ -45,18 +49,18 @@ describe('test decorate', () => {
         }).toThrow();
     });
     it('decorate contrustor: decorator should be called', () => {
-        var decorators = {
+        const decorators = {
             constructor: function(){
                 this.apply(arguments);
             }
         };
-        var decoratorSpy = spyOn(decorators, 'constructor');
-        var DecorateAirplane = Airplane.decorate(decorators);
+        const decoratorSpy = spyOn(decorators, 'constructor');
+        const DecorateAirplane = Airplane.decorate(decorators);
         new DecorateAirplane();
         expect(decoratorSpy).toHaveBeenCalled();
     });
     it('decorate constructor: call sequence', () => {
-        var decorator = {
+        const decorator = {
             before: function(){
                 // expect(++seq).toBe(1);
             },
@@ -64,15 +68,15 @@ describe('test decorate', () => {
                 // expect(++seq).toBe(3);
             }
         };
-        var def = {
+        const def = {
             init: function(){}
         };
-        var beforeSpy = spyOn(decorator, 'before');
-        var afterSpy = spyOn(decorator, 'after');
-        var initSpy = spyOn(def, 'init');
+        const beforeSpy = spyOn(decorator, 'before');
+        const afterSpy = spyOn(decorator, 'after');
+        const initSpy = spyOn(def, 'init');
 
-        var Klass = Class.create(def);
-        var KlassDecorator = Klass.decorate({
+        const Klass = Class.create(def);
+        const KlassDecorator = Klass.decorate({
             constructor: decorator
         });
 
@@ -83,36 +87,36 @@ describe('test decorate', () => {
         
     });
     it('decorate constructor: transform arguments', () => {
-        var INITIAL_VALUE= 0;
-        var decorator = {
+        const INITIAL_VALUE= 0;
+        const decorator = {
             before: function(num){
                 return [num + 1];
             }
         };
-        var Klass = Class.create({
+        const Klass = Class.create({
             init: function(self, num){
                 expect(num).toBe(INITIAL_VALUE + 1);
             }
         });
-        var KlassDecorator = Klass.decorate({
+        const KlassDecorator = Klass.decorate({
             constructor: decorator
         });
         new KlassDecorator(INITIAL_VALUE);
     });
     it('decorate constructor: "thrown" should be called after an error thrown', () => {
-        var decorator = {
+        const decorator = {
             thrown: function(error){
                 expect(error instanceof Error).toBeTruthy();
             }
         };
-        var thrownSpy = spyOn(decorator, 'thrown');
+        const thrownSpy = spyOn(decorator, 'thrown');
 
-        var Klass = Class.create({
+        const Klass = Class.create({
             init: function(){
                 throw new Error();
             }
         });
-        var KlassDecorator = Klass.decorate({
+        const KlassDecorator = Klass.decorate({
             constructor: decorator
         });
         expect(() => {
@@ -121,17 +125,17 @@ describe('test decorate', () => {
         expect(thrownSpy).toHaveBeenCalled();
     });
     it('decorate method: decorator should be called', () => {
-        var decorators = {
+        const decorators = {
             fly: function(){
             }
         };
-        var decoratorSpy = spyOn(decorators, 'fly');
-        var DecorateAirplane = Airplane.decorate(decorators);
+        const decoratorSpy = spyOn(decorators, 'fly');
+        const DecorateAirplane = Airplane.decorate(decorators);
         new DecorateAirplane().fly();
         expect(decoratorSpy).toHaveBeenCalled();
     });
     it('decorate method: call sequence', () => {
-         var decorator = {
+         const decorator = {
             before: function(){
                 // expect(++seq).toBe(1);
             },
@@ -139,15 +143,17 @@ describe('test decorate', () => {
                 // expect(++seq).toBe(3);
             }
         };
-        var def = {
-            fly: function(){}
+        const def = {
+            methods: {
+                fly: function(){}
+            }
         };
-        var beforeSpy = spyOn(decorator, 'before');
-        var afterSpy = spyOn(decorator, 'after');
-        var flySpy = spyOn(def, 'fly');
+        const beforeSpy = spyOn(decorator, 'before');
+        const afterSpy = spyOn(decorator, 'after');
+        const flySpy = spyOn(def.methods, 'fly');
 
-        var Klass = Class.create(def);
-        var KlassDecorator = Klass.decorate({
+        const Klass = Class.create(def);
+        const KlassDecorator = Klass.decorate({
             fly: decorator
         });
 
@@ -157,36 +163,40 @@ describe('test decorate', () => {
         expect(flySpy).toHaveBeenCalledBefore(afterSpy);
     });
     it('decorate method: transform arguments', () => {
-        var INITIAL_VALUE= 0;
-        var decorator = {
+        const INITIAL_VALUE= 0;
+        const decorator = {
             before: function(num){
                 return [num + 1];
             }
         };
-        var Klass = Class.create({
-            fly: function(self, num){
-                expect(num).toBe(INITIAL_VALUE + 1);
+        const Klass = Class.create({
+            methods: {
+                fly: function(self, num){
+                    expect(num).toBe(INITIAL_VALUE + 1);
+                }
             }
         });
-        var KlassDecorator = Klass.decorate({
+        const KlassDecorator = Klass.decorate({
             fly: decorator
         });
         new KlassDecorator().fly(INITIAL_VALUE);
     });
     it('decorate method: "thrown" should be called after an error thrown', () => {
-        var decorator = {
+        const decorator = {
             thrown: function(error){
                 expect(error instanceof Error).toBeTruthy();
             }
         };
-        var thrownSpy = spyOn(decorator, 'thrown');
+        const thrownSpy = spyOn(decorator, 'thrown');
 
-        var Klass = Class.create({
-            fly: function(){
-                throw new Error();
+        const Klass = Class.create({
+            methods: {
+                fly: function(){
+                    throw new Error();
+                }
             }
         });
-        var KlassDecorator = Klass.decorate({
+        const KlassDecorator = Klass.decorate({
             fly: decorator
         });
         expect(() => {
@@ -195,17 +205,17 @@ describe('test decorate', () => {
         expect(thrownSpy).toHaveBeenCalled();
     });
     it('decorate object: should not throw', () => {
-        var airplane = new Airplane();
+        const airplane = new Airplane();
         expect(() => {
             Class.decorate(airplane, {});
         }).not.toThrow();
     });
     it('decorate object: "*" decorates all methods', () => {
-        var airplane = new Airplane();
-        var decorator = {
+        const airplane = new Airplane();
+        const decorator = {
             before: function(){}
         };
-        var beforeSpy = spyOn(decorator, 'before');
+        const beforeSpy = spyOn(decorator, 'before');
 
         Class.decorate(airplane, {
             '*': decorator
